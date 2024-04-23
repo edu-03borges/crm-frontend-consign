@@ -1,67 +1,49 @@
 /* eslint-disable no-unused-vars */
-import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
-import SearchIcon from '@mui/icons-material/Search';
-import { Box, Button, Container, Grid, MenuItem, TextField, Typography } from '@mui/material';
-import axios from 'axios';
+import * as XLSX from 'xlsx';
 import { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import CustomDataGrid from 'ui-component/CustomDataGrid';
+
+import SearchIcon from '@mui/icons-material/Search';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
+
+import { Button, Container, Grid, TextField, Typography, useMediaQuery } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+
+import { heightButton } from 'store/constant';
+
 import MainCard from 'ui-component/cards/MainCard';
 import GeneralSkeleton from 'ui-component/cards/Skeleton/GeneralSkeleton';
-import * as XLSX from 'xlsx';
 
-// Data Testing Temporary **************************************************************************
-const columns = [
-  { field: 'processo', align: 'left', headerName: 'PROCESSO', width: 230 },
-  { field: 'nome', align: 'left', headerName: 'NOME', width: 250 },
-  { field: 'cpfCnpj', align: 'left', headerName: 'CPF / CNPJ', width: 250 },
-  { field: 'saldoTotal', align: 'left', headerName: 'SALDO TOTAL', width: 320 },
-  { field: 'saldoRetorno', align: 'left', headerName: 'SALDO RETORNO', width: 320 },
-  { field: 'data', align: 'left', headerName: 'DATA', width: 250 }
-];
-
-const rows = [
-  {
-    id: 1,
-    processo: '215/14602',
-    nome: 'ALISSON',
-    cpfCnpj: '123.456.789-00',
-    saldoTotal: 'R$ 855,33',
-    saldoRetorno: 'R$ 612,64',
-    data: '01/01/2021'
-  }
-];
-
-const banks = [
-  {
-    id: 'none',
-    name: 'Nenhum'
-  },
-  {
-    id: 'c6Bank',
-    name: 'C6 Bank'
-  }
-];
-// *************************************************************************************************
-
-const FgtsSimulation = () => {
-  const { control, handleSubmit } = useForm();
+const Histories = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [isLoading, setLoading] = useState(true);
-  const [dataXlsx, setDataXlsx] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
     setLoading(false);
   }, []);
 
-  const onSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const data = {};
+
+    formData.forEach((value, key) => {
+      data[key] = value;
+    });
+
     await aut();
+    console.log(data);
   };
 
   async function aut() {
     try {
       const data = { cpfs: dataXlsx };
       const response = await axios.post('http://127.0.0.1:3333/automations/mercantil_bank/automation', data);
+      console.log(response);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -74,7 +56,7 @@ const FgtsSimulation = () => {
     const columnHeaders = [];
 
     // setLoading(true);
-    reader.onload = async (e) => {
+    reader.onload = async () => {
       const fileData = reader.result;
       const wb = XLSX.read(fileData, { type: 'binary' });
 
@@ -102,6 +84,7 @@ const FgtsSimulation = () => {
 
     if (ev.target.files[0]) {
       reader.readAsBinaryString(ev.target.files[0]);
+      setSelectedFile(ev.target.files[0]);
     } else {
       setLoading(false);
     }
@@ -119,8 +102,20 @@ const FgtsSimulation = () => {
       columnNames.push(obj);
     }
 
-    setDataXlsx(columnNames);
+    // setDataXlsx(columnNames);
   }
+
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const getFileExtension = (filename) => {
+    return filename.slice(((filename.lastIndexOf('.') - 1) >>> 0) + 2);
+  };
 
   return (
     <>
@@ -128,76 +123,87 @@ const FgtsSimulation = () => {
         <GeneralSkeleton />
       ) : (
         <>
-          <Container maxWidth="xxl" sx={{ marginLeft: '-10px', marginBottom: '10px' }}>
+          <Container maxWidth="xxl" sx={{ display: 'flex', justifyContent: 'space-between', marginLeft: '-10px', marginBottom: '10px' }}>
             <Typography variant="h2" color="secondary">
               Simular Saldo
             </Typography>
           </Container>
           <MainCard>
             <Grid container>
-              <Grid item xs={12}>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <Box sx={{ display: 'flex', gap: '20px' }}>
-                    <Controller
-                      name="bankFilter"
-                      control={control}
-                      defaultValue=""
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          label="Banco"
-                          select
-                          SelectProps={{
-                            variant: 'outlined'
-                          }}
-                          sx={{ width: '20%' }}
-                        >
-                          {banks.map((bank) => (
-                            <MenuItem key={bank.id} value={bank.id}>
-                              {bank.name}
-                            </MenuItem>
-                          ))}
-                        </TextField>
-                      )}
-                    />
-                    <Controller
-                      name="cpfFilter"
-                      control={control}
-                      defaultValue=""
-                      render={({ field }) => <TextField {...field} label="CPF" variant="outlined" sx={{ width: '35%' }} />}
-                    />
-                    <input hidden id="contained-button-file" type="file" accept=".xls,.xlsx" onChange={(e) => handleFileUpload(e)} />
+              <Grid container item spacing={2}>
+                <Grid item xs={12}>
+                  <form onSubmit={handleSubmit}>
+                    <Grid container spacing={2}>
+                      <Grid container item spacing={2}>
+                        <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 4}>
+                          <TextField
+                            label="Localizar..."
+                            name="search"
+                            text
+                            SelectProps={{
+                              variant: 'outlined'
+                            }}
+                            fullWidth
+                          />
+                        </Grid>
+                        <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 4} />
+                        <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 2}>
+                          <input
+                            type="file"
+                            id="contained-button-file"
+                            accept=".xlsx,.xls,.csv,.txt,.rem"
+                            onChange={handleFileUpload}
+                            style={{ display: 'none' }}
+                          />
+                          <Button
+                            startIcon={<UploadFileIcon />}
+                            fullWidth
+                            onClick={() => document.getElementById('contained-button-file').click()}
+                            sx={{
+                              height: theme.spacing(heightButton),
+                              border: `1px solid ${theme.palette.primary.main}`
+                            }}
+                          >
+                            Carregar Arquivo
+                          </Button>
+                        </Grid>
 
-                    <Button
-                      variant="outlined"
-                      startIcon={<CloudUploadOutlinedIcon />}
-                      onClick={() => document.getElementById('contained-button-file').click()}
-                      sx={{ width: '15%', ml: '15%' }}
-                    >
-                      <span>Carregar Arquivo</span>
-                    </Button>
-
-                    <Button type="submit" variant="contained" startIcon={<SearchIcon />} sx={{ width: '15%', ml: 'auto' }}>
-                      Consultar
-                    </Button>
-                  </Box>
-                </form>
-                <Grid item xs={12} mt={2}>
-                  <Box>
-                    <CustomDataGrid
-                      rows={rows}
-                      columns={columns}
-                      initialState={{
-                        pagination: {
-                          paginationModel: {
-                            pageSize: 5
-                          }
-                        }
-                      }}
-                      pageSizeOptions={[5]}
-                      disableRowSelectionOnClick
-                    />
-                  </Box>
+                        <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 2}>
+                          <Button
+                            type="submit"
+                            variant="contained"
+                            fullWidth
+                            startIcon={<SearchIcon />}
+                            sx={{
+                              backgroundColor: theme.palette.success.primary,
+                              '&:hover': {
+                                background: theme.palette.primary.dark,
+                                color: theme.palette.primary.light
+                              },
+                              height: theme.spacing(heightButton)
+                            }}
+                          >
+                            Consultar
+                          </Button>
+                        </Grid>
+                      </Grid>
+                      <Grid container item spacing={2}>
+                        <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 8} />
+                        {selectedFile ? (
+                          <>
+                            <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 4}>
+                              <Typography variant="body2" gutterBottom sx={{ color: 'text.primary' }}>
+                                Tamanho: <span style={{ color: 'rgb(0, 128, 255)' }}>{formatFileSize(selectedFile.size)}</span>
+                                &nbsp; Tipo: <span style={{ color: 'rgb(0, 128, 255)' }}>{getFileExtension(selectedFile.name)}</span>
+                              </Typography>
+                            </Grid>
+                          </>
+                        ) : (
+                          <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 4}></Grid>
+                        )}
+                      </Grid>
+                    </Grid>
+                  </form>
                 </Grid>
               </Grid>
             </Grid>
@@ -208,4 +214,4 @@ const FgtsSimulation = () => {
   );
 };
 
-export default FgtsSimulation;
+export default Histories;

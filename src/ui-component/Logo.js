@@ -1,17 +1,11 @@
-// material-ui
-
-/**
- * if you want to use image instead of <svg> uncomment following.
- *
- * import logoDark from 'assets/images/logo-dark.svg';
- * import logo from 'assets/images/logo.svg';
- *
- */
-
-// ==============================|| LOGO SVG ||============================== //
+import logo from 'assets/images/novo_rumo.png';
 
 const Logo = () => {
-  return <></>;
+  return (
+    <>
+      <img src={logo} alt="Novo Rumo Empréstimos" width="140" height="65" style={{ borderRadius: 5 }} />
+    </>
+  );
 };
 
 export default Logo;

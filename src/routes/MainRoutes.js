@@ -5,8 +5,6 @@ import Loadable from 'ui-component/Loadable';
 
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')));
 
-const UtilsTablerIcons = Loadable(lazy(() => import('views/utilities/TablerIcons')));
-
 const FgtsSimulation = Loadable(lazy(() => import('views/financial/FGTS/FgtsSimulation')));
 const CpfDataCollect = Loadable(lazy(() => import('views/tools/DataCollect')));
 
@@ -26,18 +24,6 @@ const MainRoutes = {
         {
           path: 'default',
           element: <DashboardDefault />
-        }
-      ]
-    },
-
-    // Icons
-
-    {
-      path: 'icons',
-      children: [
-        {
-          path: 'tabler-icons',
-          element: <UtilsTablerIcons />
         }
       ]
     },
