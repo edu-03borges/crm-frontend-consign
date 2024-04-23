@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import * as XLSX from 'xlsx';
+import axios from 'axios';
 import { useEffect, useState } from 'react';
 
 import SearchIcon from '@mui/icons-material/Search';
@@ -20,6 +21,7 @@ const Histories = () => {
 
   const [isLoading, setLoading] = useState(true);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [dataXlsx, setDataXlsx] = useState(null);
 
   useEffect(() => {
     setLoading(false);
@@ -36,7 +38,6 @@ const Histories = () => {
     });
 
     await aut();
-    console.log(data);
   };
 
   async function aut() {
@@ -102,7 +103,7 @@ const Histories = () => {
       columnNames.push(obj);
     }
 
-    // setDataXlsx(columnNames);
+    setDataXlsx(columnNames);
   }
 
   const formatFileSize = (bytes) => {
@@ -164,7 +165,7 @@ const Histories = () => {
                               border: `1px solid ${theme.palette.primary.main}`
                             }}
                           >
-                            Carregar Arquivo
+                            Subir Arquivo
                           </Button>
                         </Grid>
 
