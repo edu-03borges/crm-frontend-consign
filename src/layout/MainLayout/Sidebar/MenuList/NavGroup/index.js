@@ -1,19 +1,14 @@
 import PropTypes from 'prop-types';
 
-// material-ui
+import { List, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { Divider, List, Typography } from '@mui/material';
 
-// project imports
-import NavItem from '../NavItem';
 import NavCollapse from '../NavCollapse';
-
-// ==============================|| SIDEBAR MENU LIST GROUP ||============================== //
+import NavItem from '../NavItem';
 
 const NavGroup = ({ item }) => {
   const theme = useTheme();
 
-  // menu list collapse & items
   const items = item.children?.map((menu) => {
     switch (menu.type) {
       case 'collapse':
@@ -47,9 +42,6 @@ const NavGroup = ({ item }) => {
       >
         {items}
       </List>
-
-      {/* group divider */}
-      <Divider sx={{ mt: 0.25, mb: 1.25 }} />
     </>
   );
 };

@@ -1,8 +1,8 @@
 {
-  "name": "finance-sys",
+  "name": "pupib",
   "version": "3.4.2",
   "private": true,
-  "homepage": "http://localhost:3001/",
+  "homepage": "http://localhost:3000/",
   "dependencies": {
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.3",

@@ -1,9 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
-import { useTheme } from '@mui/material/styles';
 import {
   Box,
   Chip,
@@ -17,6 +16,7 @@ import {
   Stack,
   Typography
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
 import MainCard from 'ui-component/cards/MainCard';
 import Transitions from 'ui-component/extended/Transitions';
@@ -146,7 +146,7 @@ const ProfileSection = () => {
                           Cubo Sistemas
                         </Typography>
                       </Stack>
-                      <Typography variant="subtitle2">FinanceSys</Typography>
+                      <Typography variant="subtitle2">PupIB</Typography>
                     </Stack>
                   </Box>
                   <Box>

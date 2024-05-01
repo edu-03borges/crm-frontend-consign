@@ -1,7 +1,7 @@
 const config = {
   basename: '/',
-  defaultPath: '/dashboard/default',
-  fontFamily: `'Roboto', sans-serif`,
+  defaultPath: '/',
+  fontFamily: `'Poppins', sans-serif`,
   borderRadius: 12
 };
 

@@ -1,13 +1,14 @@
 /* eslint-disable no-unused-vars */
-import * as XLSX from 'xlsx';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import * as XLSX from 'xlsx';
+
+import CheckIcon from '@mui/icons-material/Check';
 
 import SearchIcon from '@mui/icons-material/Search';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 
-import { Button, Container, Grid, TextField, Typography, useMediaQuery } from '@mui/material';
+import { Button, Container, Grid, Typography, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 import { heightButton } from 'store/constant';
@@ -23,11 +24,14 @@ const Histories = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [dataXlsx, setDataXlsx] = useState(null);
 
+  const [returnResponse, setReturnResponse] = useState(true);
+
   useEffect(() => {
     setLoading(false);
   }, []);
 
   const handleSubmit = async (e) => {
+    setReturnResponse(true);
     e.preventDefault();
 
     const formData = new FormData(e.target);
@@ -42,9 +46,15 @@ const Histories = () => {
 
   async function aut() {
     try {
-      const data = { cpfs: dataXlsx };
+      const data = { cpfs: dataXlsx || [] };
       const response = await axios.post('http://127.0.0.1:3333/automations/mercantil_bank/automation', data);
-      console.log(response);
+
+      const dateNow = getFormattedDateTime();
+
+      downloadXLSX(response.data.cpfsComErros, `cpfsComErros_${dateNow}`);
+      downloadXLSX(response.data.cpfsComSaldos, `cpfsComSaldos_${dateNow}`);
+
+      setReturnResponse(response.data.status);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -118,6 +128,43 @@ const Histories = () => {
     return filename.slice(((filename.lastIndexOf('.') - 1) >>> 0) + 2);
   };
 
+  const downloadXLSX = (bufferBase64, filename) => {
+    const byteCharacters = atob(bufferBase64);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+
+    const blob = new Blob([byteArray], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', filename);
+
+    document.body.appendChild(link);
+    link.click();
+
+    window.URL.revokeObjectURL(url);
+  };
+
+  const getFormattedDateTime = () => {
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+
+    const hour = String(now.getHours()).padStart(2, '0');
+    const minute = String(now.getMinutes()).padStart(2, '0');
+    const second = String(now.getSeconds()).padStart(2, '0');
+
+    const formattedDateTime = `${year}/${month}/${day} ${hour}:${minute}:${second}`;
+
+    return formattedDateTime;
+  };
   return (
     <>
       {isLoading ? (
@@ -137,15 +184,9 @@ const Histories = () => {
                     <Grid container spacing={2}>
                       <Grid container item spacing={2}>
                         <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 4}>
-                          <TextField
-                            label="Localizar..."
-                            name="search"
-                            text
-                            SelectProps={{
-                              variant: 'outlined'
-                            }}
-                            fullWidth
-                          />
+                          <Typography variant="h3" color="secondary" hidden={returnResponse || !dataXlsx}>
+                            Operação Concluída!
+                          </Typography>
                         </Grid>
                         <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 4} />
                         <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 2}>
@@ -157,15 +198,16 @@ const Histories = () => {
                             style={{ display: 'none' }}
                           />
                           <Button
-                            startIcon={<UploadFileIcon />}
+                            startIcon={selectedFile ? <CheckIcon /> : <UploadFileIcon />}
                             fullWidth
                             onClick={() => document.getElementById('contained-button-file').click()}
                             sx={{
                               height: theme.spacing(heightButton),
-                              border: `1px solid ${theme.palette.primary.main}`
+                              border: `1px solid ${selectedFile ? theme.palette.success.dark : theme.palette.primary.main}`,
+                              color: selectedFile ? theme.palette.success.dark : theme.palette.primary.main
                             }}
                           >
-                            Subir Arquivo
+                            {selectedFile ? 'Arquivo Enviado' : 'Enviar Arquivo'}
                           </Button>
                         </Grid>
 
@@ -188,21 +230,20 @@ const Histories = () => {
                           </Button>
                         </Grid>
                       </Grid>
-                      <Grid container item spacing={2}>
-                        <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 8} />
-                        {selectedFile ? (
-                          <>
-                            <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 4}>
-                              <Typography variant="body2" gutterBottom sx={{ color: 'text.primary' }}>
-                                Tamanho: <span style={{ color: 'rgb(0, 128, 255)' }}>{formatFileSize(selectedFile.size)}</span>
-                                &nbsp; Tipo: <span style={{ color: 'rgb(0, 128, 255)' }}>{getFileExtension(selectedFile.name)}</span>
-                              </Typography>
-                            </Grid>
-                          </>
-                        ) : (
-                          <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 4}></Grid>
-                        )}
-                      </Grid>
+
+                      {/* {selectedFile ? (
+                        <Grid container item spacing={2}>
+                          <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 8} />
+                          <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 4}>
+                            <Typography variant="body2" gutterBottom sx={{ color: 'text.primary' }}>
+                              Tamanho: <span style={{ color: 'rgb(0, 128, 255)' }}>{formatFileSize(selectedFile.size)}</span>
+                              &nbsp; Tipo: <span style={{ color: 'rgb(0, 128, 255)' }}>{getFileExtension(selectedFile.name)}</span>
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      ) : (
+                        <></>
+                      )} */}
                     </Grid>
                   </form>
                 </Grid>
