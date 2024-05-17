@@ -1,21 +1,14 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react';
 
-import { gridSpacing } from 'store/constant';
-import { Badge, Button, Container, Grid, Typography, useMediaQuery } from '@mui/material';
+import { Badge, Grid, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
-import { Link } from 'react-router-dom';
 import CustomDataGrid from 'ui-component/CustomDataGrid';
 import MainCard from 'ui-component/cards/MainCard';
 import GeneralSkeleton from 'ui-component/cards/Skeleton/GeneralSkeleton';
 
-import TotalQueries from './TotalQueries';
-import ActiveSessions from './ActiveSessions';
-import BatchQueries from './BatchQueries';
-import ManualQueries from './ManualQueries';
-
-const Dashboard = () => {
+const SimulationCampaigns = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -29,18 +22,18 @@ const Dashboard = () => {
 
   const columns = [
     {
-      field: 'instancia',
+      field: 'name',
       align: 'left',
-      headerName: 'Instância',
-      maxWidth: 150
+      headerName: 'Nome',
+      maxWidth: 200
     },
-    { field: 'uuid', align: 'left', headerName: 'UUID', minWidth: 250 },
-    { field: 'cpf', align: 'left', headerName: 'CPF', minWidth: 250 },
+    { field: 'company', align: 'left', headerName: 'Empresa', minWidth: 200 },
+    { field: 'records', align: 'left', headerName: 'Registros', minWidth: 200 },
     {
       field: 'status',
       align: 'left',
       headerName: 'Status',
-      maxWidth: 170,
+      maxWidth: 200,
       renderCell: ({ row }) => (
         <Badge
           color="success"
@@ -63,49 +56,49 @@ const Dashboard = () => {
         </Badge>
       )
     },
-    { field: 'tempo_logado', align: 'left', headerName: 'Tempo Logado', maxWidth: 170 }
+    { field: 'creation_date', align: 'left', headerName: 'Data De Criação', maxWidth: 200 }
   ];
 
   const rows = [
     {
       id: 1,
-      instancia: 2,
-      uuid: 'abc123def456',
-      cpf: '123.456.789-00',
+      name: 'Milena',
+      company: 'Novo Rumo Empréstimos',
+      records: 233,
       status: 'PROCESSANDO',
-      tempo_logado: '2 horas'
+      creation_date: '2023-01-15T10:30:00Z'
     },
     {
       id: 2,
-      instancia: 3,
-      uuid: 'def789ghi123',
-      cpf: '987.654.321-00',
+      name: 'Eduardo',
+      company: 'Novo Rumo Empréstimos',
+      records: 142,
       status: 'LIVRE',
-      tempo_logado: '1 hora'
+      creation_date: '2023-02-20T14:45:00Z'
     },
     {
       id: 3,
-      instancia: 4,
-      uuid: 'ghi456jkl789',
-      cpf: '456.789.123-00',
+      name: 'Carla',
+      company: 'Financeira Boa Vista',
+      records: 315,
       status: 'LIVRE',
-      tempo_logado: '3 horas'
+      creation_date: '2023-03-10T09:20:00Z'
     },
     {
       id: 4,
-      instancia: 4,
-      uuid: 'jkl789mno456',
-      cpf: '321.654.987-00',
+      name: 'Felipe',
+      company: 'Crédito Rápido',
+      records: 87,
       status: 'PROCESSANDO',
-      tempo_logado: '1 hora'
+      creation_date: '2023-04-05T11:00:00Z'
     },
     {
       id: 5,
-      instancia: 4,
-      uuid: 'mno123pqr789',
-      cpf: '789.123.456-00',
-      status: 'PROCESSANDO',
-      tempo_logado: '4 horas'
+      name: 'Ana',
+      company: 'Empréstimos Seguros',
+      records: 192,
+      status: 'LIVRE',
+      creation_date: '2023-05-12T16:15:00Z'
     }
   ];
 
@@ -117,26 +110,6 @@ const Dashboard = () => {
         <GeneralSkeleton />
       ) : (
         <>
-          <Grid container>
-            <Grid container item spacing={2}>
-              <Grid item xs={12}>
-                <Grid container spacing={gridSpacing}>
-                  <Grid item lg={3} md={6} sm={3} xs={2}>
-                    <TotalQueries isLoading={isLoading} />
-                  </Grid>
-                  <Grid item lg={3} md={6} sm={3} xs={2}>
-                    <ActiveSessions isLoading={isLoading} />
-                  </Grid>
-                  <Grid item lg={3} md={6} sm={3} xs={2}>
-                    <BatchQueries isLoading={isLoading} />
-                  </Grid>
-                  <Grid item lg={3} md={6} sm={3} xs={2}>
-                    <ManualQueries isLoading={isLoading} />
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
           <MainCard sx={{ mt: 2 }}>
             <Grid container>
               <Grid container item spacing={2}>
@@ -166,4 +139,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default SimulationCampaigns;

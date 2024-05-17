@@ -1,9 +1,9 @@
-import logo from 'assets/images/novo_rumo.png';
+import logo from 'assets/images/logo.png';
 
 const Logo = () => {
   return (
     <>
-      <img src={logo} alt="Novo Rumo Empréstimos" width="100" style={{ borderRadius: 5 }} />
+      <img src={logo} alt="Leads" width="120" />
     </>
   );
 };

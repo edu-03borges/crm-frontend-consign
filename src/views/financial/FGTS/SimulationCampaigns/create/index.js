@@ -1,22 +1,23 @@
 /* eslint-disable no-unused-vars */
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import * as XLSX from 'xlsx';
 
-import CheckIcon from '@mui/icons-material/Check';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-import SearchIcon from '@mui/icons-material/Search';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
-
-import { Button, Container, Grid, Typography, useMediaQuery } from '@mui/material';
+import { Button, Container, Grid, IconButton, MenuItem, TextField, Typography, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 import { heightButton } from 'store/constant';
 
 import MainCard from 'ui-component/cards/MainCard';
 import GeneralSkeleton from 'ui-component/cards/Skeleton/GeneralSkeleton';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
-const Histories = () => {
+import CheckIcon from '@mui/icons-material/Check';
+
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+
+const CriarCampanhas = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -24,14 +25,11 @@ const Histories = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [dataXlsx, setDataXlsx] = useState(null);
 
-  const [returnResponse, setReturnResponse] = useState(true);
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-  useEffect(() => {
-    setLoading(false);
-  }, []);
-
-  const handleSubmit = async (e) => {
-    setReturnResponse(true);
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     const formData = new FormData(e.target);
@@ -41,24 +39,14 @@ const Histories = () => {
       data[key] = value;
     });
 
-    await aut();
+    data.dateRange = selectedDateRange;
+
+    console.log(data);
   };
 
-  async function aut() {
-    try {
-      const data = { cpfs: dataXlsx || [] };
-      const response = await axios.post('http://127.0.0.1:3333/automations/mercantil_bank/automation', data);
-
-      const dateNow = getFormattedDateTime();
-
-      downloadXLSX(response.data.cpfsComErros, `cpfsComErros_${dateNow}`);
-      downloadXLSX(response.data.cpfsComSaldos, `cpfsComSaldos_${dateNow}`);
-
-      setReturnResponse(response.data.status);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  }
+  useEffect(() => {
+    setLoading(false);
+  }, []);
 
   async function handleFileUpload(ev) {
     ev.preventDefault();
@@ -116,56 +104,6 @@ const Histories = () => {
     setDataXlsx(columnNames);
   }
 
-  const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
-  const getFileExtension = (filename) => {
-    return filename.slice(((filename.lastIndexOf('.') - 1) >>> 0) + 2);
-  };
-
-  const downloadXLSX = (bufferBase64, filename) => {
-    const byteCharacters = atob(bufferBase64);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
-    }
-    const byteArray = new Uint8Array(byteNumbers);
-
-    const blob = new Blob([byteArray], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-
-    const url = window.URL.createObjectURL(blob);
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', filename);
-
-    document.body.appendChild(link);
-    link.click();
-
-    window.URL.revokeObjectURL(url);
-  };
-
-  const getFormattedDateTime = () => {
-    const now = new Date();
-
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-
-    const hour = String(now.getHours()).padStart(2, '0');
-    const minute = String(now.getMinutes()).padStart(2, '0');
-    const second = String(now.getSeconds()).padStart(2, '0');
-
-    const formattedDateTime = `${year}/${month}/${day} ${hour}:${minute}:${second}`;
-
-    return formattedDateTime;
-  };
-
   return (
     <>
       {isLoading ? (
@@ -174,8 +112,12 @@ const Histories = () => {
         <>
           <Container maxWidth="xxl" sx={{ display: 'flex', justifyContent: 'space-between', marginLeft: '-10px', marginBottom: '10px' }}>
             <Typography variant="h2" color="secondary">
-              Simular Saldo
+              Criar Campanha
             </Typography>
+
+            <IconButton aria-label="menu de opções" onClick={handleMenuOpen}>
+              <MoreVertIcon />
+            </IconButton>
           </Container>
           <MainCard>
             <Grid container>
@@ -185,11 +127,38 @@ const Histories = () => {
                     <Grid container spacing={2}>
                       <Grid container item spacing={2}>
                         <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 4}>
-                          <Typography variant="h3" color="secondary" hidden={returnResponse || !dataXlsx}>
-                            Operação Concluída!
+                          <Typography variant="subtitle1" color="secondary" sx={{ mb: 1 }}>
+                            NOME DA CAMPANHA
                           </Typography>
+                          <TextField
+                            label="Nome da Campanha"
+                            name="search"
+                            text
+                            SelectProps={{
+                              variant: 'outlined'
+                            }}
+                            fullWidth
+                          />
                         </Grid>
-                        <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 4} />
+                      </Grid>
+                      <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 4}>
+                        <Typography variant="subtitle1" color="secondary" sx={{ mb: 1 }}>
+                          EMPRESA
+                        </Typography>
+                        <TextField
+                          label="Empresa"
+                          name="units"
+                          select
+                          SelectProps={{
+                            variant: 'outlined'
+                          }}
+                          fullWidth
+                        >
+                          <MenuItem value="emp1">Empresa 1</MenuItem>
+                          <MenuItem value="emp2">Empresa 2</MenuItem>
+                        </TextField>
+                      </Grid>
+                      <Grid container item spacing={2}>
                         <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 2}>
                           <input
                             type="file"
@@ -211,40 +180,20 @@ const Histories = () => {
                             {selectedFile ? 'Arquivo Enviado' : 'Enviar Arquivo'}
                           </Button>
                         </Grid>
-
                         <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 2}>
                           <Button
                             type="submit"
                             variant="contained"
+                            startIcon={<AddCircleOutlineIcon />}
                             fullWidth
-                            startIcon={<SearchIcon />}
                             sx={{
-                              backgroundColor: theme.palette.success.primary,
-                              '&:hover': {
-                                background: theme.palette.primary.dark,
-                                color: theme.palette.primary.light
-                              },
                               height: theme.spacing(heightButton)
                             }}
                           >
-                            Consultar
+                            Criar Campanha
                           </Button>
                         </Grid>
                       </Grid>
-
-                      {/* {selectedFile ? (
-                        <Grid container item spacing={2}>
-                          <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 8} />
-                          <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 4}>
-                            <Typography variant="body2" gutterBottom sx={{ color: 'text.primary' }}>
-                              Tamanho: <span style={{ color: 'rgb(0, 128, 255)' }}>{formatFileSize(selectedFile.size)}</span>
-                              &nbsp; Tipo: <span style={{ color: 'rgb(0, 128, 255)' }}>{getFileExtension(selectedFile.name)}</span>
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      ) : (
-                        <></>
-                      )} */}
                     </Grid>
                   </form>
                 </Grid>
@@ -257,4 +206,4 @@ const Histories = () => {
   );
 };
 
-export default Histories;
+export default CriarCampanhas;

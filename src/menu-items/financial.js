@@ -20,6 +20,20 @@ const financial = {
           type: 'item',
           url: '/financial/fgts-simulation',
           breadcrumbs: false
+        },
+        {
+          id: 'criar-campanhas',
+          title: 'Nova Campanhas',
+          type: 'item',
+          url: '/financial/campaign-create',
+          breadcrumbs: false
+        },
+        {
+          id: 'listar-campanhas',
+          title: 'Ver Campanhas',
+          type: 'item',
+          url: '/financial/campaigns-list',
+          breadcrumbs: false
         }
       ]
     }
