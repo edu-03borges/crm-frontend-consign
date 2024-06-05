@@ -9,13 +9,16 @@ import { useTheme } from '@mui/material/styles';
 
 import { heightButton } from 'store/constant';
 
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import MainCard from 'ui-component/cards/MainCard';
 import GeneralSkeleton from 'ui-component/cards/Skeleton/GeneralSkeleton';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 import CheckIcon from '@mui/icons-material/Check';
 
 import UploadFileIcon from '@mui/icons-material/UploadFile';
+
+import { customApi } from 'utils/api';
+import notify from 'utils/notify';
 
 const CriarCampanhas = () => {
   const theme = useTheme();
@@ -23,13 +26,13 @@ const CriarCampanhas = () => {
 
   const [isLoading, setLoading] = useState(true);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [dataXlsx, setDataXlsx] = useState(null);
+  const [dataXlsx, setDataXlsx] = useState([]);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = new FormData(e.target);
@@ -39,9 +42,33 @@ const CriarCampanhas = () => {
       data[key] = value;
     });
 
-    data.dateRange = selectedDateRange;
+    data.records = dataXlsx.length;
+    data.file_data = JSON.stringify(dataXlsx);
 
-    console.log(data);
+    if (!data.name) {
+      notify.error('Erro. Preencher o nome da campanha');
+      return;
+    }
+
+    if (!data.company) {
+      notify.error('Erro. Preencher o nome da empresa');
+      return;
+    }
+
+    if (!data.records) {
+      notify.error('Erro. Subir um arquivo com dados');
+      return;
+    }
+
+    try {
+      const response = await customApi.post('http://localhost:3535/api/create_campaign', data);
+
+      if (response.status == 200) {
+        notify.success('Sucesso. Iniciando campanha...');
+      }
+    } catch (error) {
+      notify.error('Erro. Não foi possível iniciar a campanha');
+    }
   };
 
   useEffect(() => {
@@ -132,7 +159,7 @@ const CriarCampanhas = () => {
                           </Typography>
                           <TextField
                             label="Nome da Campanha"
-                            name="search"
+                            name="name"
                             text
                             SelectProps={{
                               variant: 'outlined'
@@ -147,15 +174,14 @@ const CriarCampanhas = () => {
                         </Typography>
                         <TextField
                           label="Empresa"
-                          name="units"
+                          name="company"
                           select
                           SelectProps={{
                             variant: 'outlined'
                           }}
                           fullWidth
                         >
-                          <MenuItem value="emp1">Empresa 1</MenuItem>
-                          <MenuItem value="emp2">Empresa 2</MenuItem>
+                          <MenuItem value="Novo Rumo Empréstimos">Novo Rumo Empréstimos</MenuItem>
                         </TextField>
                       </Grid>
                       <Grid container item spacing={2}>

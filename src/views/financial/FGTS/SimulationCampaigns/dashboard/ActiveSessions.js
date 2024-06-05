@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 
-import { styled, useTheme } from '@mui/material/styles';
 import { Avatar, Box, Grid, Typography } from '@mui/material';
+import { styled, useTheme } from '@mui/material/styles';
 
 import MainCard from 'ui-component/cards/MainCard';
 import SkeletonCardsBox from 'ui-component/cards/Skeleton/CardsBox';
 
-import SearchIcon from '@mui/icons-material/Search';
+import CallSplitIcon from '@mui/icons-material/CallSplit';
 
 const CardWrapper = styled(MainCard)(() => ({
   //backgroundColor: theme.palette.secondary.dark,
@@ -15,7 +15,7 @@ const CardWrapper = styled(MainCard)(() => ({
   position: 'relative'
 }));
 
-const TotalQueries = ({ isLoading }) => {
+const ActiveSessions = ({ isLoading }) => {
   const theme = useTheme();
 
   return (
@@ -34,16 +34,16 @@ const TotalQueries = ({ isLoading }) => {
                       sx={{
                         ...theme.typography.commonAvatar,
                         ...theme.typography.largeAvatar,
-                        backgroundColor: '#E7E8FD',
+                        backgroundColor: '#FFE0DB',
                         mt: 1
                       }}
                     >
-                      <SearchIcon style={{ color: '#8585E2' }} />
+                      <CallSplitIcon style={{ color: '#D6523A' }} />
                     </Avatar>
                   </Grid>
                   <Grid item sx={{ ml: 2 }}>
                     <Typography sx={{ fontSize: 22, color: theme.palette.primary.dark, fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75 }}>
-                      22455
+                      0
                     </Typography>
                   </Grid>
                 </Grid>
@@ -76,8 +76,8 @@ const TotalQueries = ({ isLoading }) => {
   );
 };
 
-TotalQueries.propTypes = {
+ActiveSessions.propTypes = {
   isLoading: PropTypes.bool
 };
 
-export default TotalQueries;
+export default ActiveSessions;

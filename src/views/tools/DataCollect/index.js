@@ -55,7 +55,7 @@ const handleFileUpload = (e) => {
   reader.readAsBinaryString(file);
 };
 
-const FgtsSimulation = () => {
+const DataHygiene = () => {
   const { control, handleSubmit } = useForm();
 
   const [isLoading, setLoading] = useState(true);
@@ -155,4 +155,4 @@ const FgtsSimulation = () => {
   );
 };
 
-export default FgtsSimulation;
+export default DataHygiene;

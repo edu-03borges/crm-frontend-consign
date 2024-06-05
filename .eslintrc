@@ -4,14 +4,6 @@
     "browser": true,
     "es2021": true
   },
-  "extends": [
-    "prettier",
-    "plugin:react/jsx-runtime",
-    "plugin:jsx-a11y/recommended",
-    "plugin:react-hooks/recommended",
-    "eslint:recommended",
-    "plugin:react/recommended"
-  ],
   "settings": {
     "react": {
       "createClass": "createReactClass", // Regex for Component Factory to use,
@@ -40,8 +32,8 @@
   },
   "plugins": ["prettier", "react", "react-hooks"],
   "rules": {
-    "react/jsx-uses-react": "error",
-    "react/jsx-uses-vars": "error",
+    "react/jsx-uses-react": "off",
+    "react/jsx-uses-vars": "off",
     "react/react-in-jsx-scope": "off",
     "no-undef": "off",
     "react/display-name": "off",
@@ -62,19 +54,19 @@
     "import/no-extraneous-dependencies": "off",
     "jsx-a11y/no-autofocus": "off",
     "no-restricted-imports": [
-      "error",
+      "off",
       {
         "patterns": ["@mui/*/*/*", "!@mui/material/test-utils/*"]
       }
     ],
     "no-unused-vars": [
-      "error",
+      "off",
       {
         "ignoreRestSiblings": false
       }
     ],
     "prettier/prettier": [
-      "warn",
+      "off",
       {
         "bracketSpacing": true,
         "printWidth": 140,

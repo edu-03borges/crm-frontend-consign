@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 
-import { styled, useTheme } from '@mui/material/styles';
 import { Avatar, Box, Grid, Typography } from '@mui/material';
+import { styled, useTheme } from '@mui/material/styles';
 
 import MainCard from 'ui-component/cards/MainCard';
 import SkeletonCardsBox from 'ui-component/cards/Skeleton/CardsBox';
@@ -15,7 +15,7 @@ const CardWrapper = styled(MainCard)(() => ({
   position: 'relative'
 }));
 
-const ManualQueries = ({ isLoading }) => {
+const BatchQueries = ({ isLoading }) => {
   const theme = useTheme();
 
   return (
@@ -43,7 +43,7 @@ const ManualQueries = ({ isLoading }) => {
                   </Grid>
                   <Grid item sx={{ ml: 2 }}>
                     <Typography sx={{ fontSize: 22, color: theme.palette.primary.dark, fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75 }}>
-                      18
+                      0
                     </Typography>
                   </Grid>
                 </Grid>
@@ -76,8 +76,8 @@ const ManualQueries = ({ isLoading }) => {
   );
 };
 
-ManualQueries.propTypes = {
+BatchQueries.propTypes = {
   isLoading: PropTypes.bool
 };
 
-export default ManualQueries;
+export default BatchQueries;

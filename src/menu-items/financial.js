@@ -15,24 +15,31 @@ const financial = {
       icon: icons.AttachMoney,
       children: [
         {
-          id: 'fgts-simulation',
-          title: 'Simulação',
+          id: 'campaign-dashboard',
+          title: 'Dashboard',
           type: 'item',
-          url: '/financial/fgts-simulation',
+          url: '/financial/campaign-dashboard',
           breadcrumbs: false
         },
         {
-          id: 'criar-campanhas',
-          title: 'Nova Campanhas',
+          id: 'campaign-create',
+          title: 'Nova Campanha',
           type: 'item',
           url: '/financial/campaign-create',
           breadcrumbs: false
         },
         {
-          id: 'listar-campanhas',
+          id: 'campaigns-list',
           title: 'Ver Campanhas',
           type: 'item',
           url: '/financial/campaigns-list',
+          breadcrumbs: false
+        },
+        {
+          id: 'instance-create',
+          title: 'Criar Instância',
+          type: 'item',
+          url: '/financial/instance-create',
           breadcrumbs: false
         }
       ]
