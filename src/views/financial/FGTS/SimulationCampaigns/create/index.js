@@ -45,6 +45,11 @@ const CriarCampanhas = () => {
     data.records = dataXlsx.length;
     data.file_data = JSON.stringify(dataXlsx);
 
+    if (!data.instance) {
+      notify.error('Erro. Preencher o número da instância');
+      return;
+    }
+
     if (!data.name) {
       notify.error('Erro. Preencher o nome da campanha');
       return;
@@ -67,7 +72,7 @@ const CriarCampanhas = () => {
         notify.success('Sucesso. Iniciando campanha...');
       }
     } catch (error) {
-      notify.error('Erro. Não foi possível iniciar a campanha');
+      notify.error(`Erro. ${error.response.data.message}`);
     }
   };
 
@@ -152,6 +157,22 @@ const CriarCampanhas = () => {
                 <Grid item xs={12}>
                   <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
+                      <Grid container item spacing={2}>
+                        <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 4}>
+                          <Typography variant="subtitle1" color="secondary" sx={{ mb: 1 }}>
+                            NÚMERO DA INSTÂNCIA
+                          </Typography>
+                          <TextField
+                            label="Número da Instância"
+                            name="instance"
+                            type="number"
+                            SelectProps={{
+                              variant: 'outlined'
+                            }}
+                            fullWidth
+                          />
+                        </Grid>
+                      </Grid>
                       <Grid container item spacing={2}>
                         <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 4}>
                           <Typography variant="subtitle1" color="secondary" sx={{ mb: 1 }}>
