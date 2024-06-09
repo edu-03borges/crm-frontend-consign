@@ -41,7 +41,14 @@ const financial = {
           type: 'item',
           url: '/financial/instance-create',
           breadcrumbs: false
-        }
+        },
+        {
+          id: 'instance-list',
+          title: 'Ver Instâncias',
+          type: 'item',
+          url: '/financial/instance-list',
+          breadcrumbs: false
+        },
       ]
     }
   ]

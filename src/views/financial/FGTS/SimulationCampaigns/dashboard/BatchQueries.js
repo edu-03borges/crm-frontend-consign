@@ -52,7 +52,7 @@ const BatchQueries = ({ isLoading }) => {
                 <Grid container alignItems="center">
                   <Grid item>
                     <Typography sx={{ fontSize: 18, color: theme.palette.primary.dark, fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75 }}>
-                      Total de consultas
+                      Consultas na Lote
                     </Typography>
                   </Grid>
                 </Grid>
@@ -65,7 +65,7 @@ const BatchQueries = ({ isLoading }) => {
                     color: theme.palette.grey[500]
                   }}
                 >
-                  Média de consultas (dia)
+                  Média por solicitação
                 </Typography>
               </Grid>
             </Grid>

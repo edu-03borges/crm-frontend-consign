@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react';
 
-import { Badge, Grid, useMediaQuery } from '@mui/material';
+import { Grid, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { gridSpacing } from 'store/constant';
 
@@ -14,7 +14,6 @@ import BatchQueries from './BatchQueries';
 import ManualQueries from './ManualQueries';
 import TotalQueries from './TotalQueries';
 
-import api from 'utils/api';
 
 const Dashboard = () => {
   const theme = useTheme();
@@ -25,15 +24,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     setLoading(false);
-
-    showData()
   }, []);
-
-  const showData = async () => {
-    const { data } = await api.get('/financial/fgts/show_instances');
-
-    setRows(data);
-  } 
 
   const timeToWords = (milliseconds) => {
     let totalSeconds = Math.floor(milliseconds / 1000);
@@ -61,48 +52,42 @@ const Dashboard = () => {
 
   const columns = [
     {
-      field: 'instance',
+      field: 'column1',
       align: 'left',
-      headerName: 'Instância',
-      maxWidth: 150
+      headerName: 'Coluna 1',
+      width: 20
     },
-    { field: 'uuid', align: 'left', headerName: 'UUID', minWidth: 250 },
-    // { field: 'document', align: 'left', headerName: 'Documento', minWidth: 250 },
     {
-      field: 'status',
+      field: 'column2',
       align: 'left',
-      headerName: 'Status',
-      maxWidth: 170,
-      renderCell: ({ row }) => (
-        <Badge
-          color="success"
-          style={{
-            backgroundColor: row.status == 'EM USO' ? '#E7E8FD' : '#E7FBDE',
-            color: row.status == 'EM USO' ? '#8585E2' : '#95D062',
-            height: '1.7em',
-            borderRadius: 3,
-            display: 'inline-flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: 'auto',
-            padding: '0 0.8em',
-            margin: '0.2em',
-            fontSize: '0.9em',
-            marginTop: '0px'
-          }}
-        >
-          {row.status}
-        </Badge>
-      )
+      headerName: 'Coluna 2',
+      width: 20
     },
-    { 
-      field: 'time_logged_in', 
-      align: 'left', 
-      headerName: 'Tempo Logado', 
-      maxWidth: 170,
-      renderCell: ({ row }) => timeToWords(Number(row.time_logged_in))
-     }
-  ];
+    {
+      field: 'column3',
+      align: 'left',
+      headerName: 'Coluna 3',
+      width: 20
+    },
+    {
+      field: 'column4',
+      align: 'left',
+      headerName: 'Coluna 4',
+      width: 20
+    },
+    {
+      field: 'column5',
+      align: 'left',
+      headerName: 'Coluna 5',
+      width: 20
+    },
+    {
+      field: 'column6',
+      align: 'left',
+      headerName: 'Coluna 6',
+      width: 20
+    },
+  ]
 
   return (
     <>

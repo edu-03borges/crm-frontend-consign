@@ -9,6 +9,7 @@ const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')))
 const DashboardCampaigns = Loadable(lazy(() => import('views/financial/FGTS/SimulationCampaigns/dashboard')));
 const ListCampaigns = Loadable(lazy(() => import('views/financial/FGTS/SimulationCampaigns/list')));
 const CreateCampaigns = Loadable(lazy(() => import('views/financial/FGTS/SimulationCampaigns/create')));
+const ListInstance = Loadable(lazy(() => import('views/financial/FGTS/Instance/list')));
 const CreateInstance = Loadable(lazy(() => import('views/financial/FGTS/Instance/create')));
 
 const CpfDataCollect = Loadable(lazy(() => import('views/tools/DataCollect')));
@@ -49,6 +50,10 @@ const MainRoutes = {
         {
           path: 'campaign-create',
           element: <CreateCampaigns />
+        },
+        {
+          path: 'instance-list',
+          element: <ListInstance />
         },
         {
           path: 'instance-create',

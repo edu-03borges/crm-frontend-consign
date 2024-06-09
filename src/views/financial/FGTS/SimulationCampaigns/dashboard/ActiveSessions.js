@@ -52,7 +52,7 @@ const ActiveSessions = ({ isLoading }) => {
                 <Grid container alignItems="center">
                   <Grid item>
                     <Typography sx={{ fontSize: 18, color: theme.palette.primary.dark, fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75 }}>
-                      Total de consultas
+                      Sessões Ativas
                     </Typography>
                   </Grid>
                 </Grid>
@@ -65,7 +65,7 @@ const ActiveSessions = ({ isLoading }) => {
                     color: theme.palette.grey[500]
                   }}
                 >
-                  Média de consultas (dia)
+                  Média por retorno
                 </Typography>
               </Grid>
             </Grid>

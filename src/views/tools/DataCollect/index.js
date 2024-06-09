@@ -50,7 +50,6 @@ const handleFileUpload = (e) => {
 
     const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
     const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
-    console.log(data);
   };
   reader.readAsBinaryString(file);
 };
@@ -65,7 +64,7 @@ const DataHygiene = () => {
   }, []);
 
   const onSubmit = (data) => {
-    console.log('Form Data:', data);
+    
   };
 
   return (

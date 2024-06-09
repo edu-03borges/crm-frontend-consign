@@ -1,26 +1,17 @@
+import { Grid, useMediaQuery } from '@mui/material';
+import { styled, useTheme } from '@mui/material/styles';
 import { DataGridPro } from '@mui/x-data-grid-pro';
 import { LicenseInfo } from '@mui/x-license';
 import { useEffect, useRef, useState } from 'react';
 
-import { Grid, useMediaQuery } from '@mui/material';
-
-import { styled, useTheme } from '@mui/material/styles';
-
 const StyledDataGridPro = styled(DataGridPro)({
   border: 0,
   fontSize: '12.5px',
-  '.MuiDataGrid-filler': {
-    // backgroundColor: '#f5f5f5'
-  },
+  '.MuiDataGrid-filler': {},
   '.MuiDataGrid-columnHeader': {
-    // backgroundColor: '#f5f5f5',
     color: '#333',
     display: 'flex',
     alignItems: 'center'
-  },
-  '.MuiDataGrid-columnHeaderTitle': {
-    // fontSize: '12.5px',
-    // fontWeight: 'bold'
   },
   '.MuiDataGrid-cell': {
     borderBottom: '1px solid #f0f0f0'
@@ -51,13 +42,12 @@ const CustomDataGrid = ({ rows, columns }) => {
       if (!headerRef.current) return;
       const headerWidth = headerRef.current.offsetWidth;
       const columnCount = columns.length;
-      let columnWidth = headerWidth / columnCount;
-      if (isMobile) {
-        columnWidth = Math.max(columnWidth, 180);
-      }
+      let columnFlex = headerWidth / columnCount;
+
       const newColumns = columns.map((column) => ({
         ...column,
-        width: columnWidth
+        flex: 1, // Ajuste flexível
+        minWidth: isMobile ? 180 : undefined // Define uma largura mínima para mobile
       }));
       setAdjustedColumns(newColumns);
     };
@@ -70,7 +60,7 @@ const CustomDataGrid = ({ rows, columns }) => {
   }, [columns, isMobile]);
 
   return (
-    <Grid ref={headerRef}>
+    <Grid ref={headerRef} style={{ width: '100%' }}>
       <StyledDataGridPro
         density="standard"
         rows={rows}

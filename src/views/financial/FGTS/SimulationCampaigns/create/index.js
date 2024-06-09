@@ -1,10 +1,11 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-import { Button, Container, Grid, IconButton, MenuItem, TextField, Typography, useMediaQuery } from '@mui/material';
+import { Box, Button, Chip, Container, FormControl, Grid, IconButton, InputLabel, MenuItem, Select, TextField, Typography, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 import { heightButton } from 'store/constant';
@@ -17,16 +18,25 @@ import CheckIcon from '@mui/icons-material/Check';
 
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 
-import { customApi } from 'utils/api';
+import api, { customApi } from 'utils/api';
 import notify from 'utils/notify';
 
 const CriarCampanhas = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const navigate = useNavigate();
 
   const [isLoading, setLoading] = useState(true);
   const [selectedFile, setSelectedFile] = useState(null);
   const [dataXlsx, setDataXlsx] = useState([]);
+  const [selectedInstances, setSelectedInstances] = useState([]);
+  const [instances, setInstances] = useState([]);
+
+  useEffect(() => {
+    setLoading(false);
+
+    showDataInstances();
+  }, []);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -44,9 +54,10 @@ const CriarCampanhas = () => {
 
     data.records = dataXlsx.length;
     data.file_data = JSON.stringify(dataXlsx);
+    data.instances = selectedInstances;
 
-    if (!data.instance) {
-      notify.error('Erro. Preencher o número da instância');
+    if (!data.instances.length) {
+      notify.error('Erro. Necessário ao menos uma instância');
       return;
     }
 
@@ -66,19 +77,17 @@ const CriarCampanhas = () => {
     }
 
     try {
-      const response = await customApi.post('http://localhost:3535/api/create_campaign', data);
+      const response = await customApi.post('http://localhost:5000/start', data);
 
       if (response.status == 200) {
-        notify.success('Sucesso. Iniciando campanha...');
+        notify.success('Aguarde. Iniciando campanha...');
+
+        navigate('/financial/campaigns-list');
       }
     } catch (error) {
       notify.error(`Erro. ${error.response.data.message}`);
     }
   };
-
-  useEffect(() => {
-    setLoading(false);
-  }, []);
 
   async function handleFileUpload(ev) {
     ev.preventDefault();
@@ -136,6 +145,12 @@ const CriarCampanhas = () => {
     setDataXlsx(columnNames);
   }
 
+  const showDataInstances = async () => {
+    const { data } = await api.get('/financial/fgts/show_status_instances');
+
+    setInstances(data);
+  }
+
   return (
     <>
       {isLoading ? (
@@ -160,17 +175,37 @@ const CriarCampanhas = () => {
                       <Grid container item spacing={2}>
                         <Grid item xs={isMobile ? 12 : 0} md={isMobile ? 12 : 4}>
                           <Typography variant="subtitle1" color="secondary" sx={{ mb: 1 }}>
-                            NÚMERO DA INSTÂNCIA
+                            INSTÂNCIAS
                           </Typography>
-                          <TextField
-                            label="Número da Instância"
-                            name="instance"
-                            type="number"
-                            SelectProps={{
-                              variant: 'outlined'
-                            }}
-                            fullWidth
-                          />
+                          <FormControl fullWidth variant="outlined">
+                            <InputLabel 
+                              id="instances-label" 
+                              shrink={false} 
+                              style={{
+                                display: selectedInstances.length ? 'none' : 'block'
+                              }}
+                            >Instâncias</InputLabel>
+                            <Select
+                              labelId="instances-label"
+                              id="instances"
+                              multiple
+                              value={selectedInstances}
+                              onChange={(event) => setSelectedInstances(event.target.value)}
+                              renderValue={(selected) => (
+                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                  {selected.map((value) => (
+                                    <Chip key={value} label={instances.find(option => option === value).instance} />
+                                  ))}
+                                </Box>
+                              )}
+                            >
+                              {instances.map((option) => (
+                                <MenuItem key={option.instance} value={option}>
+                                  {option.instance}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
                         </Grid>
                       </Grid>
                       <Grid container item spacing={2}>

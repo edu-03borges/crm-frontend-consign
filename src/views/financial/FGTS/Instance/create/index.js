@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
@@ -17,6 +18,7 @@ import notify from 'utils/notify';
 const CriarCampanhas = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const navigate = useNavigate();
 
   const [isLoading, setLoading] = useState(true);
 
@@ -54,9 +56,11 @@ const CriarCampanhas = () => {
 
       if (response.status == 200) {
         notify.success('Sucesso. Instância criada');
+
+        navigate('/financial/instance-list');
       }
     } catch (error) {
-      notify.error('Erro. Não foi possível criar a instância');
+      notify.error(`Error. ${error.response.data.message}`);
     }
   };
 

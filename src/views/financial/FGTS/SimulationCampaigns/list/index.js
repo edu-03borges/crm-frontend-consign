@@ -5,17 +5,25 @@ import { Badge, Grid, Tooltip, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 import { Description } from '@mui/icons-material'; // Importar o ícone Description
+import DeleteIcon from '@mui/icons-material/Delete';
 import CustomDataGrid from 'ui-component/CustomDataGrid';
 import MainCard from 'ui-component/cards/MainCard';
 import GeneralSkeleton from 'ui-component/cards/Skeleton/GeneralSkeleton';
+import ConfirmDialogDelete from "./Dialogs/ConfirmDialogDelete";
 
 import api from 'utils/api';
+import { formatDateToBrazilian } from 'utils/date';
+import notify from 'utils/notify';
+
+import * as XLSX from 'xlsx';
 
 const SimulationCampaigns = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [isLoading, setLoading] = useState(true);
+  const [openDialogDeleteCampaign, setOpenDialogDeleteCampaign] = useState(false);
+  const [uuidCampaignDelete, setUuidCampaignDelete] = useState('');
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
@@ -28,38 +36,13 @@ const SimulationCampaigns = () => {
     const { data } = await api.get('/financial/fgts/show_campaigns');
 
     setRows(data);
-  } 
-
-  const downloadExcel = async (uuid) => {
-    const { data } = await api.get(`/financial/fgts/download_files/${uuid}`);
-
-    const dateNow = getFormattedDateTime();
-    
-    downloadXLSX(data.xlsx_error, `cpfsComErros_${dateNow}`);
-    downloadXLSX(data.xlsx_success, `cpfsComSaldos_${dateNow}`);
   }
 
-  const downloadXLSX = (bufferBase64, filename) => {
-    const byteCharacters = atob(bufferBase64);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
-    }
-    const byteArray = new Uint8Array(byteNumbers);
+  const downloadExcel = async (uuid) => {
+    const { data } = await api.get(`/financial/fgts/search_data/${uuid}`);
 
-    const blob = new Blob([byteArray], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-
-    const url = window.URL.createObjectURL(blob);
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', filename);
-
-    document.body.appendChild(link);
-    link.click();
-
-    window.URL.revokeObjectURL(url);
-  };
+    generateXLSX(data.query_data, data.name);
+  }
 
   const getFormattedDateTime = () => {
     const now = new Date();
@@ -77,20 +60,82 @@ const SimulationCampaigns = () => {
     return formattedDateTime;
   };
 
+  const generateXLSX = (query_data, name) => {
+    const dateNow = getFormattedDateTime();
+
+    const header = ['cpf', 'valor_garantia', 'valor_liberado', 'erro'];
+    const ws = XLSX.utils.json_to_sheet(query_data, { header });
+
+    ws['A1'].v = 'CPF';
+    ws['B1'].v = 'VALOR GARANTIA';
+    ws['C1'].v = 'VALOR LIBERADO';
+    ws['D1'].v = 'ERRO';
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+    const s2ab = s => {
+      const buf = new ArrayBuffer(s.length);
+      const view = new Uint8Array(buf);
+      for (let i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xff;
+      return buf;
+    };
+
+    const blob = new Blob([s2ab(wbout)], { type: 'application/octet-stream' });
+    const fileName = `Relatório ${name} | ${dateNow}.xlsx`;
+    if (window.navigator.msSaveOrOpenBlob) {
+      // For IE
+      window.navigator.msSaveBlob(blob, fileName);
+    } else {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      document.body.appendChild(a);
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }, 0);
+    }
+  };
+
+  const deleteCampaign = async () => {
+    try {
+      const response = await api.delete(`/financial/fgts/delete_campaign/${uuidCampaignDelete}`);
+
+      if (response.status == 200) {
+        notify.success('Sucesso. Campanha deletada');
+
+        setUuidCampaignDelete('');
+        handleDialogClose();
+        showData();
+      }
+    } catch (error) {
+      notify.error(`Erro. ${error.response.data.message}`);
+    }
+
+  }
+
+  const handleDialogClose = () => {
+    setOpenDialogDeleteCampaign(false);
+  }
+
   const columns = [
     {
       field: 'name',
       align: 'left',
       headerName: 'Nome',
-      maxWidth: 200
+      maxWidth: 150
     },
-    { field: 'company', align: 'left', headerName: 'Empresa', minWidth: 200 },
-    { field: 'records', align: 'left', headerName: 'Registros', minWidth: 200 },
+    { field: 'company', align: 'left', headerName: 'Empresa', maxWidth: 200 },
+    { field: 'records', align: 'center', headerName: 'Total de Registros', maxWidth: 150 },
     {
       field: 'status',
       align: 'left',
       headerName: 'Status',
-      maxWidth: 200,
+      maxWidth: 150,
       renderCell: ({ row }) => (
         <Badge
           color="success"
@@ -113,37 +158,60 @@ const SimulationCampaigns = () => {
         </Badge>
       )
     },
-    { field: 'created_at', align: 'left', headerName: 'Data De Criação', maxWidth: 200 },
     {
-      field: 'file',
+      field: 'created_at',
       align: 'left',
-      headerName: 'Arquivo',
-      maxWidth: 200,
+      headerName: 'Data De Criação',
+      maxWidth: 150,
+      renderCell: ({ row }) => formatDateToBrazilian(row.created_at)
+    },
+    { field: 'records_consulted', align: 'center', headerName: 'Registros Consultados', maxWidth: 170 },
+    {
+      field: 'actions',
+      align: 'left',
+      headerName: 'Ações',
+      maxWidth: 100,
       renderCell: ({ row }) => (
-        <Badge
-          color="success"
-          style={{
-            color: row.status != 'CONCLUÍDA' ? '#B0B0B0' : '#95D062',
-            height: '1.7em',
-            borderRadius: 3,
-            display: 'inline-flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: 'auto',
-            padding: '0 0.8em',
-            margin: '0.2em',
-            fontSize: '0.9em',
-            marginTop: '0px',
-            cursor: 'pointer',
-          }}
-          onClick={() => {
-            if (row.status == "CONCLUÍDA")
-              downloadExcel(row.uuid)}}
-        >
-          <Tooltip title="Download Excel">
-            <Description />
-          </Tooltip>
-        </Badge>
+        <>
+          <Badge
+            color="success"
+            style={{
+              color: theme.palette.error.main,
+              cursor: 'pointer'
+            }}
+            onClick={() => {
+              setOpenDialogDeleteCampaign(true);
+              setUuidCampaignDelete(row.uuid);
+            }}
+          >
+            <DeleteIcon />
+          </Badge>
+          <Badge
+            color="success"
+            style={{
+              color: !row.query_data || !row.query_data.length ? '#B0B0B0' : '#95D062',
+              height: '1.7em',
+              borderRadius: 3,
+              display: 'inline-flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: 'auto',
+              padding: '0 0.8em',
+              margin: '0.2em',
+              fontSize: '0.9em',
+              marginTop: '0px',
+              cursor: 'pointer',
+            }}
+            onClick={() => {
+              if (row.query_data && row.query_data.length)
+                downloadExcel(row.uuid)
+            }}
+          >
+            <Tooltip title="Download Excel">
+              <Description />
+            </Tooltip>
+          </Badge>
+        </>
       )
     },
   ];
@@ -176,6 +244,7 @@ const SimulationCampaigns = () => {
                 </Grid>
               </Grid>
             </Grid>
+            <ConfirmDialogDelete open={openDialogDeleteCampaign} handleClose={handleDialogClose} handleConfirm={deleteCampaign} />
           </MainCard>
         </>
       )}
