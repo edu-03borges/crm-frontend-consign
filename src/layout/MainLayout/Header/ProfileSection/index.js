@@ -146,7 +146,7 @@ const ProfileSection = () => {
                           Cubo Sistemas
                         </Typography>
                       </Stack>
-                      <Typography variant="subtitle2">PupIB</Typography>
+                      <Typography variant="subtitle2">Consign</Typography>
                     </Stack>
                   </Box>
                   <Box>

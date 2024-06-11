@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
+import { publicIp } from 'public-ip';
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
@@ -21,7 +22,7 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import api, { customApi } from 'utils/api';
 import notify from 'utils/notify';
 
-const CriarCampanhas = () => {
+const CriarCampanhas = async() => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const navigate = useNavigate();
@@ -76,8 +77,10 @@ const CriarCampanhas = () => {
       return;
     }
 
+    const myIP = await publicIp();
+
     try {
-      const response = await customApi.post('http://localhost:5000/start', data);
+      const response = await customApi.post(`http://${myIP}:5000/start`, data);
 
       if (response.status == 200) {
         notify.success('Aguarde. Iniciando campanha...');
