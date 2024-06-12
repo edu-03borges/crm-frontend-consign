@@ -63,13 +63,17 @@ const SimulationCampaigns = () => {
   const generateXLSX = (query_data, name) => {
     const dateNow = getFormattedDateTime();
 
-    const header = ['cpf', 'valor_garantia', 'valor_liberado', 'erro'];
+    const header = ['company', 'document', 'name', 'phone', 'guarantee_value', 'released_value', 'consultation_date', 'status'];
     const ws = XLSX.utils.json_to_sheet(query_data, { header });
 
-    ws['A1'].v = 'CPF';
-    ws['B1'].v = 'VALOR GARANTIA';
-    ws['C1'].v = 'VALOR LIBERADO';
-    ws['D1'].v = 'ERRO';
+    ws['A1'].v = 'EMPRESA';
+    ws['B1'].v = 'CPF';
+    ws['C1'].v = 'NOME';
+    ws['D1'].v = 'TELEFONE';
+    ws['E1'].v = 'SALDO GARANTIA';
+    ws['F1'].v = 'SALDO LIBERADO';
+    ws['G1'].v = 'DATA DA CONSULTA';
+    ws['H1'].v = 'STATUS';
 
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');

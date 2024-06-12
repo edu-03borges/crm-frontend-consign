@@ -137,12 +137,21 @@ const CriarCampanhas = () => {
       const obj = {};
 
       const header_cpf = columnHeaders[0];
-      obj.cpf = info[header_cpf];
+     
+      obj.cpf = formatCPF(info[header_cpf]);
 
       columnNames.push(obj);
     }
 
     setDataXlsx(columnNames);
+  }
+
+  const formatCPF = (cpf) => {
+    let cpfString = cpf.toString();
+    while (cpfString.length < 11) {
+        cpfString = '0' + cpfString;
+    }
+    return cpfString;
   }
 
   const showDataInstances = async () => {
