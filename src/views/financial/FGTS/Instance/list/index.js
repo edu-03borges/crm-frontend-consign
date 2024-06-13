@@ -1,15 +1,17 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react';
 
-import { Badge, Grid, useMediaQuery } from '@mui/material';
+import { Badge, Grid, useMediaQuery, Tooltip } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 import CustomDataGrid from 'ui-component/CustomDataGrid';
 import MainCard from 'ui-component/cards/MainCard';
 import GeneralSkeleton from 'ui-component/cards/Skeleton/GeneralSkeleton';
 import ConfirmDialogDelete from "./Dialogs/ConfirmDialogDelete";
+import ConfirmDialogUpdateStatus from "./Dialogs/ConfirmDialogUpdateStatus";
 
 import DeleteIcon from '@mui/icons-material/Delete';
+import UpdateIcon from '@mui/icons-material/Update';
 
 import api from 'utils/api';
 import notify from 'utils/notify';
@@ -20,7 +22,8 @@ const Dashboard = () => {
 
   const [isLoading, setLoading] = useState(true);
   const [openDialogDeleteInstance, setOpenDialogDeleteInstance] = useState(false);
-  const [uuidInstanceDelete, setUuidInstanceDelete] = useState('');
+  const [openDialogUpdateStatusInstance, setOpenDialogUpdateStatusInstance] = useState(false);
+  const [dataInstance, setDataInstance] = useState({});
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
@@ -61,13 +64,18 @@ const Dashboard = () => {
 
   const deleteInstance = async () => {
     try {
-      const response = await api.delete(`/financial/fgts/delete_instance/${uuidInstanceDelete}`);
+      if (dataInstance.status == "EM USO") {
+        notify.error(`Erro. Você não pode excluir uma instância em uso`);
+        return;
+      }
+
+      const response = await api.delete(`/financial/fgts/delete_instance/${dataInstance.uuid}`);
 
       if (response.status == 200) {
         notify.success('Sucesso. Instância deletada');
   
-        setUuidInstanceDelete('');
-        handleDialogClose();
+        setDataInstance({});
+        handleDialogCloseDelete();
         showData();
       }
     } catch (error) {
@@ -75,8 +83,28 @@ const Dashboard = () => {
     }
   }
 
-  const handleDialogClose = () => {
+  const handleDialogCloseDelete = () => {
     setOpenDialogDeleteInstance(false);
+  }
+
+  const handleDialogCloseUpdateStatus = () => {
+    setOpenDialogUpdateStatusInstance(false);
+  }
+
+  const updateStatusInstance = async (status) => {
+    try {
+      const response = await api.post(`/financial/fgts/update_status_instance/${dataInstance.uuid}`, { status });
+
+      if (response.status == 200) {
+        notify.success('Sucesso. Status da instância atualizado');
+  
+        setDataInstance({});
+        handleDialogCloseUpdateStatus();
+        showData();
+      }
+    } catch (error) {
+      notify.error(`Erro. ${error.response.data.message}`);
+    }
   }
 
   const columns = [
@@ -117,11 +145,12 @@ const Dashboard = () => {
     },
     {
       field: 'actions',
-      align: 'center',
+      align: 'left',
       headerName: 'Ações',
-      maxWidth: 60,
+      maxWidth: 100,
       renderCell: ({ row }) => (
-        <Badge
+        <>
+          <Badge
           color="success"
           style={{
             color: theme.palette.error.main,
@@ -129,11 +158,30 @@ const Dashboard = () => {
           }}
           onClick={() => {
             setOpenDialogDeleteInstance(true);
-            setUuidInstanceDelete(row.uuid);
+            setDataInstance(row);
           }}
         >
-          <DeleteIcon />
+          <Tooltip title="Excluir Instância">
+              <DeleteIcon />
+          </Tooltip>
         </Badge>
+        <Badge
+          color="success"
+          style={{
+            color: '#5A9BD4',
+            cursor: 'pointer'
+          }}
+          onClick={() => {
+            setOpenDialogUpdateStatusInstance(true);
+            setDataInstance(row);
+          }}
+        >
+          <Tooltip title="Atualizar Status da Instância">
+              <UpdateIcon />
+          </Tooltip>
+        </Badge>
+        </>
+
       )
     },
   ];
@@ -166,7 +214,8 @@ const Dashboard = () => {
                 </Grid>
               </Grid>
             </Grid>
-            <ConfirmDialogDelete open={openDialogDeleteInstance} handleClose={handleDialogClose} handleConfirm={deleteInstance} />
+            <ConfirmDialogDelete open={openDialogDeleteInstance} handleClose={handleDialogCloseDelete} handleConfirm={deleteInstance} />
+            <ConfirmDialogUpdateStatus open={openDialogUpdateStatusInstance} handleClose={handleDialogCloseUpdateStatus} handleConfirm={updateStatusInstance} />
           </MainCard>
         </>
       )}

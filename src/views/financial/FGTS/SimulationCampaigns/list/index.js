@@ -23,7 +23,7 @@ const SimulationCampaigns = () => {
 
   const [isLoading, setLoading] = useState(true);
   const [openDialogDeleteCampaign, setOpenDialogDeleteCampaign] = useState(false);
-  const [uuidCampaignDelete, setUuidCampaignDelete] = useState('');
+  const [dataCampaign, setDataCampaign] = useState({});
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
@@ -107,12 +107,17 @@ const SimulationCampaigns = () => {
 
   const deleteCampaign = async () => {
     try {
-      const response = await api.delete(`/financial/fgts/delete_campaign/${uuidCampaignDelete}`);
+      if (dataCampaign.status == "PROCESSANDO") {
+        notify.error(`Erro. Você não pode excluir uma campanha em processamento`);
+        return;
+      }
+
+      const response = await api.delete(`/financial/fgts/delete_campaign/${dataCampaign.uuid}`);
 
       if (response.status == 200) {
         notify.success('Sucesso. Campanha deletada');
 
-        setUuidCampaignDelete('');
+        setDataCampaign({});
         handleDialogClose();
         showData();
       }
@@ -185,10 +190,12 @@ const SimulationCampaigns = () => {
             }}
             onClick={() => {
               setOpenDialogDeleteCampaign(true);
-              setUuidCampaignDelete(row.uuid);
+              setDataCampaign(row);
             }}
           >
-            <DeleteIcon />
+            <Tooltip title="Excluir Campanha">
+              <DeleteIcon />
+            </Tooltip>
           </Badge>
           <Badge
             color="success"
