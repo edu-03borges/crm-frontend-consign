@@ -10,8 +10,9 @@ import CustomDataGrid from 'ui-component/CustomDataGrid';
 import MainCard from 'ui-component/cards/MainCard';
 import GeneralSkeleton from 'ui-component/cards/Skeleton/GeneralSkeleton';
 import ConfirmDialogDelete from "./Dialogs/ConfirmDialogDelete";
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
-import api from 'utils/api';
+import api, { customApi } from 'utils/api';
 import { formatDateToBrazilian } from 'utils/date';
 import notify from 'utils/notify';
 
@@ -42,6 +43,23 @@ const SimulationCampaigns = () => {
     const { data } = await api.get(`/financial/fgts/search_data/${uuid}`);
 
     generateXLSX(data.query_data, data.name);
+  }
+
+  const continueCampaign = async (uuid) => {
+    try {
+
+      const response = await customApi.post(`${process.env.REACT_APP_API_URL_AUT}/start`, { uuid, continue: true });
+
+      if (response.status == 200) {
+        notify.success('Sucesso. Iniciando campanha');
+
+        setDataCampaign({});
+        handleDialogClose();
+        showData();
+      }
+    } catch (error) {
+      notify.error(`Erro. ${error.response.data.message}`);
+    }
   }
 
   const getFormattedDateTime = () => {
@@ -107,11 +125,6 @@ const SimulationCampaigns = () => {
 
   const deleteCampaign = async () => {
     try {
-      if (dataCampaign.status == "PROCESSANDO") {
-        notify.error(`Erro. Você não pode excluir uma campanha em processamento`);
-        return;
-      }
-
       const response = await api.delete(`/financial/fgts/delete_campaign/${dataCampaign.uuid}`);
 
       if (response.status == 200) {
@@ -124,12 +137,36 @@ const SimulationCampaigns = () => {
     } catch (error) {
       notify.error(`Erro. ${error.response.data.message}`);
     }
-
   }
 
   const handleDialogClose = () => {
     setOpenDialogDeleteCampaign(false);
   }
+
+  const getStatusStyles = (status, theme) => {
+    switch (status) {
+      case 'PROCESSANDO':
+        return {
+          backgroundColor: theme.palette.custom.purpleCustomLight,
+          color: theme.palette.custom.purpleCustomDark,
+        };
+      case 'CANCELADA':
+        return {
+          backgroundColor: theme.palette.custom.redCustomLight,
+          color: theme.palette.custom.redCustomDark,
+        };
+      case 'PARCIAL':
+        return {
+          backgroundColor: theme.palette.custom.blueCustomLight,
+          color: theme.palette.custom.blueCustomDark,
+        };
+      default:
+        return {
+          backgroundColor: theme.palette.custom.greenCustomLight,
+          color: theme.palette.custom.greenCustomDark,
+        };
+    }
+  };
 
   const columns = [
     {
@@ -149,8 +186,7 @@ const SimulationCampaigns = () => {
         <Badge
           color="success"
           style={{
-            backgroundColor: row.status == 'PROCESSANDO' ? '#E7E8FD' : row.status == 'CANCELADA' ? '#FDE7E7' : '#E7FBDE',
-            color: row.status == 'PROCESSANDO' ? '#8585E2' : row.status == 'CANCELADA' ? '#E28585' : '#95D062',
+            ...getStatusStyles(row.status, theme),
             height: '1.7em',
             borderRadius: 3,
             display: 'inline-flex',
@@ -201,16 +237,6 @@ const SimulationCampaigns = () => {
             color="success"
             style={{
               color: !row.query_data || !row.query_data.length ? '#B0B0B0' : '#95D062',
-              height: '1.7em',
-              borderRadius: 3,
-              display: 'inline-flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: 'auto',
-              padding: '0 0.8em',
-              margin: '0.2em',
-              fontSize: '0.9em',
-              marginTop: '0px',
               cursor: 'pointer',
             }}
             onClick={() => {
@@ -220,6 +246,21 @@ const SimulationCampaigns = () => {
           >
             <Tooltip title="Download Excel">
               <Description />
+            </Tooltip>
+          </Badge>
+          <Badge
+            color="success"
+            style={{
+              color: '#8585E2',
+              cursor: 'pointer',
+            }}
+            onClick={() => {
+              if (row.count != row.records)
+                continueCampaign(row.uuid)
+            }}
+          >
+            <Tooltip title="Continuar consultas">
+              <PlayArrowIcon />
             </Tooltip>
           </Badge>
         </>

@@ -74,6 +74,16 @@ $darkTextTitle: #d7dcec;
 $darkTextPrimary: #bdc8f0;
 $darkTextSecondary: #8492c4;
 
+// custom colors
+$greenCustomLight: #E7FBDE;
+$greenCustomDark: #95D062;
+$purpleCustomLight: #E7E8FD;
+$purpleCustomDark: #8585E2;
+$blueCustomLight: #D0E8F2;
+$blueCustomDark: #5A9BD4;
+$redCustomLight: #FDE7E7;
+$redCustomDark: #E28585;
+
 // ==============================|| JAVASCRIPT ||============================== //
 
 :export {
@@ -152,4 +162,13 @@ $darkTextSecondary: #8492c4;
   darkSecondaryDark: $darkSecondaryDark;
   darkSecondary200: $darkSecondary200;
   darkSecondary800: $darkSecondary800;
+
+  greenCustomLight: $greenCustomLight;
+  greenCustomDark: $greenCustomDark;
+  purpleCustomLight: $purpleCustomLight;
+  purpleCustomDark: $purpleCustomDark;
+  blueCustomLight: $blueCustomLight;
+  blueCustomDark: $blueCustomDark;
+  redCustomLight: $redCustomLight;
+  redCustomDark: $redCustomDark;
 }

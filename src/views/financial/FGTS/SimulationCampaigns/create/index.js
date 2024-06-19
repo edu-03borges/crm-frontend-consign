@@ -55,7 +55,8 @@ const CriarCampanhas = () => {
     data.records = dataXlsx.length;
     data.file_data = JSON.stringify(dataXlsx);
     data.instances = selectedInstances;
-
+    data.continue = false;
+    
     if (!data.instances.length) {
       notify.error('Erro. Necessário ao menos uma instância');
       return;
@@ -77,7 +78,7 @@ const CriarCampanhas = () => {
     }
 
     try {
-      const response = await customApi.post(`http://localhost:5000/start`, data);
+      const response = await customApi.post(`${process.env.REACT_APP_API_URL_AUT}/start`, data);
 
       if (response.status == 200) {
         notify.success('Aguarde. Iniciando campanha...');
@@ -138,12 +139,32 @@ const CriarCampanhas = () => {
 
       const header_cpf = columnHeaders[0];
      
-      obj.cpf = formatCPF(info[header_cpf]);
+      obj.cpf = 
+        formatCPF(info[header_cpf])
+        .trim()
+        .replace(/^[\r\n]+|[\r\n]+$/g, '');
 
       columnNames.push(obj);
     }
 
-    setDataXlsx(columnNames);
+    const uniqueList = removeDuplicateCpfs(columnNames)
+
+    setDataXlsx(uniqueList);
+  }
+
+  function removeDuplicateCpfs(list) {
+    const seenCpfs = new Set();
+    const uniqueList = [];
+
+    for (const item of list) {
+        const cpf = item.cpf;
+        if (!seenCpfs.has(cpf)) {
+            uniqueList.push(item);
+            seenCpfs.add(cpf);
+        }
+    }
+
+    return uniqueList;
   }
 
   const formatCPF = (cpf) => {
