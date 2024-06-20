@@ -10,6 +10,7 @@ import CustomDataGrid from 'ui-component/CustomDataGrid';
 import MainCard from 'ui-component/cards/MainCard';
 import GeneralSkeleton from 'ui-component/cards/Skeleton/GeneralSkeleton';
 import ConfirmDialogDelete from "./Dialogs/ConfirmDialogDelete";
+import ContinueDialogCampaign from "./Dialogs/ContinueDialogCampaign"
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
 import api, { customApi } from 'utils/api';
@@ -24,6 +25,7 @@ const SimulationCampaigns = () => {
 
   const [isLoading, setLoading] = useState(true);
   const [openDialogDeleteCampaign, setOpenDialogDeleteCampaign] = useState(false);
+  const [openDialogContinueCampaign, setOpenDialogContinueCampaign] = useState(false);
   const [dataCampaign, setDataCampaign] = useState({});
   const [rows, setRows] = useState([]);
 
@@ -32,35 +34,6 @@ const SimulationCampaigns = () => {
 
     showData();
   }, []);
-
-  const showData = async () => {
-    const { data } = await api.get('/financial/fgts/show_campaigns');
-
-    setRows(data);
-  }
-
-  const downloadExcel = async (uuid) => {
-    const { data } = await api.get(`/financial/fgts/search_data/${uuid}`);
-
-    generateXLSX(data.query_data, data.name);
-  }
-
-  const continueCampaign = async (uuid) => {
-    try {
-
-      const response = await customApi.post(`${process.env.REACT_APP_API_URL_AUT}/start`, { uuid, continue: true });
-
-      if (response.status == 200) {
-        notify.success('Sucesso. Iniciando campanha');
-
-        setDataCampaign({});
-        handleDialogClose();
-        showData();
-      }
-    } catch (error) {
-      notify.error(`Erro. ${error.response.data.message}`);
-    }
-  }
 
   const getFormattedDateTime = () => {
     const now = new Date();
@@ -123,6 +96,35 @@ const SimulationCampaigns = () => {
     }
   };
 
+  const showData = async () => {
+    const { data } = await api.get('/financial/fgts/show_campaigns');
+
+    setRows(data);
+  }
+
+  const downloadExcel = async (uuid) => {
+    const { data } = await api.get(`/financial/fgts/search_data/${uuid}`);
+
+    generateXLSX(data.query_data, data.name);
+  }
+
+  const continueCampaign = async (instances) => {
+    try {
+
+      const response = await customApi.post(`${process.env.REACT_APP_API_URL_AUT}/start`, { uuid: dataCampaign.uuid, continue: true, instances });
+
+      if (response.status == 200) {
+        notify.success('Sucesso. Iniciando campanha');
+
+        setDataCampaign({});
+        handleDialogContinueCampaign();
+        showData();
+      }
+    } catch (error) {
+      notify.error(`Erro. ${error.response.data.message}`);
+    }
+  }
+
   const deleteCampaign = async () => {
     try {
       const response = await api.delete(`/financial/fgts/delete_campaign/${dataCampaign.uuid}`);
@@ -141,6 +143,10 @@ const SimulationCampaigns = () => {
 
   const handleDialogClose = () => {
     setOpenDialogDeleteCampaign(false);
+  }
+
+  const handleDialogContinueCampaign = () => {
+    setOpenDialogContinueCampaign(false);
   }
 
   const getStatusStyles = (status, theme) => {
@@ -255,8 +261,8 @@ const SimulationCampaigns = () => {
               cursor: 'pointer',
             }}
             onClick={() => {
-              if (row.count != row.records)
-                continueCampaign(row.uuid)
+              setOpenDialogContinueCampaign(true);
+              setDataCampaign(row);
             }}
           >
             <Tooltip title="Continuar consultas">
@@ -297,6 +303,7 @@ const SimulationCampaigns = () => {
               </Grid>
             </Grid>
             <ConfirmDialogDelete open={openDialogDeleteCampaign} handleClose={handleDialogClose} handleConfirm={deleteCampaign} />
+            <ContinueDialogCampaign open={openDialogContinueCampaign} handleClose={handleDialogContinueCampaign} handleConfirm={continueCampaign} />
           </MainCard>
         </>
       )}
