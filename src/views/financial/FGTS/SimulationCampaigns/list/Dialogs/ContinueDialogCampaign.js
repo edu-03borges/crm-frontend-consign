@@ -11,7 +11,7 @@ const ConfirmDialogUpdateStatus = ({ open, handleClose, handleConfirm }) => {
 
   useEffect(() => {
     showDataInstances();
-  }, []);
+  }, [open]);
 
   const showDataInstances = async () => {
     const { data } = await api.get('/financial/fgts/show_status_instances');
@@ -42,14 +42,14 @@ const ConfirmDialogUpdateStatus = ({ open, handleClose, handleConfirm }) => {
             renderValue={(selected) => (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                 {selected.map((value) => (
-                  <Chip key={value} label={instances.find(option => option === value).instance} />
+                  <Chip key={value} label={instances.find(option => option === value)?.instance} />
                 ))}
               </Box>
             )}
           >
             {instances.map((option) => (
-              <MenuItem key={option.instance} value={option}>
-                {option.instance}
+              <MenuItem key={option?.instance} value={option}>
+                {option?.instance}
               </MenuItem>
             ))}
           </Select>
