@@ -10,7 +10,10 @@ const ConfirmDialogUpdateStatus = ({ open, handleClose, handleConfirm }) => {
   const [instances, setInstances] = useState([]);
 
   useEffect(() => {
-    showDataInstances();
+    if (open) {
+      setSelectedInstances([]);
+      showDataInstances();
+    }
   }, [open]);
 
   const showDataInstances = async () => {
