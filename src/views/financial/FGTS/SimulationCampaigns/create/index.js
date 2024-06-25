@@ -13,6 +13,7 @@ import { heightButton } from 'store/constant';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import MainCard from 'ui-component/cards/MainCard';
 import GeneralSkeleton from 'ui-component/cards/Skeleton/GeneralSkeleton';
+import Loader from 'ui-component/Loader';
 
 import CheckIcon from '@mui/icons-material/Check';
 
@@ -27,6 +28,7 @@ const CriarCampanhas = () => {
   const navigate = useNavigate();
 
   const [isLoading, setLoading] = useState(true);
+  const [loadingType, setLoadingType] = useState(1);
   const [selectedFile, setSelectedFile] = useState(null);
   const [dataXlsx, setDataXlsx] = useState([]);
   const [selectedInstances, setSelectedInstances] = useState([]);
@@ -78,14 +80,20 @@ const CriarCampanhas = () => {
     }
 
     try {
+      setLoading(true);
+      setLoadingType(2);
+
       const response = await customApi.post(`${process.env.REACT_APP_API_URL_AUT}/start`, data);
 
       if (response.status == 200) {
-        notify.success('Aguarde. Iniciando campanha...');
+        setLoading(false);
 
+        notify.success('Aguarde. Iniciando campanha...');
+        
         navigate('/financial/campaigns-list');
       }
     } catch (error) {
+      setLoading(false);
       notify.error(`Erro. ${error.response.data.message}`);
     }
   };
@@ -176,15 +184,22 @@ const CriarCampanhas = () => {
   }
 
   const showDataInstances = async () => {
+    setLoading(true);
+    setLoadingType(1);
+
     const { data } = await api.get('/financial/fgts/show_status_instances');
 
     setInstances(data);
+
+    setLoading(false);
   }
 
   return (
     <>
-      {isLoading ? (
+      {isLoading ? loadingType == 1 ? (
         <GeneralSkeleton />
+      ) : (
+        <Loader />
       ) : (
         <>
           <Container maxWidth="xxl" sx={{ display: 'flex', justifyContent: 'space-between', marginLeft: '-10px', marginBottom: '10px' }}>

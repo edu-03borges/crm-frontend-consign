@@ -9,6 +9,7 @@ import MainCard from 'ui-component/cards/MainCard';
 import GeneralSkeleton from 'ui-component/cards/Skeleton/GeneralSkeleton';
 import ConfirmDialogDelete from "./Dialogs/ConfirmDialogDelete";
 import ConfirmDialogUpdateStatus from "./Dialogs/ConfirmDialogUpdateStatus";
+import Loader from 'ui-component/Loader';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import UpdateIcon from '@mui/icons-material/Update';
@@ -21,6 +22,7 @@ const Dashboard = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [isLoading, setLoading] = useState(true);
+  const [loadingType, setLoadingType] = useState(1);
   const [openDialogDeleteInstance, setOpenDialogDeleteInstance] = useState(false);
   const [openDialogUpdateStatusInstance, setOpenDialogUpdateStatusInstance] = useState(false);
   const [dataInstance, setDataInstance] = useState({});
@@ -33,9 +35,14 @@ const Dashboard = () => {
   }, []);
 
   const showData = async () => {
+    setLoading(true);
+    setLoadingType(1);
+
     const { data } = await api.get('/financial/fgts/show_instances');
 
     setRows(data);
+
+    setLoading(false);
   } 
 
   const timeToWords = (milliseconds) => {
@@ -64,10 +71,8 @@ const Dashboard = () => {
 
   const deleteInstance = async () => {
     try {
-      if (dataInstance.status == "EM USO") {
-        notify.error(`Erro. Você não pode excluir uma instância em uso`);
-        return;
-      }
+      setLoading(true);
+      setLoadingType(2);
 
       const response = await api.delete(`/financial/fgts/delete_instance/${dataInstance.uuid}`);
 
@@ -77,8 +82,10 @@ const Dashboard = () => {
         setDataInstance({});
         handleDialogCloseDelete();
         showData();
+        setLoading(false);
       }
     } catch (error) {
+      setLoading(false);
       notify.error(`Erro. ${error.response.data.message}`);
     }
   }
@@ -93,6 +100,9 @@ const Dashboard = () => {
 
   const updateStatusInstance = async (status) => {
     try {
+      setLoading(true);
+      setLoadingType(2);
+      
       const response = await api.post(`/financial/fgts/update_status_instance/${dataInstance.uuid}`, { status });
 
       if (response.status == 200) {
@@ -101,8 +111,10 @@ const Dashboard = () => {
         setDataInstance({});
         handleDialogCloseUpdateStatus();
         showData();
+        setLoading(false);
       }
     } catch (error) {
+      setLoading(false);
       notify.error(`Erro. ${error.response.data.message}`);
     }
   }
@@ -188,8 +200,10 @@ const Dashboard = () => {
 
   return (
     <>
-      {isLoading ? (
+      {isLoading ? loadingType == 1 ? (
         <GeneralSkeleton />
+      ) : (
+        <Loader />
       ) : (
         <>
           <MainCard sx={{ mt: 2 }}>

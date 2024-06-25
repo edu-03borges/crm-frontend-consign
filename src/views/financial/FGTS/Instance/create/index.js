@@ -11,6 +11,7 @@ import { heightButton } from 'store/constant';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import MainCard from 'ui-component/cards/MainCard';
 import GeneralSkeleton from 'ui-component/cards/Skeleton/GeneralSkeleton';
+import Loader from 'ui-component/Loader';
 
 import api from 'utils/api';
 import notify from 'utils/notify';
@@ -21,7 +22,12 @@ const CriarCampanhas = () => {
   const navigate = useNavigate();
 
   const [isLoading, setLoading] = useState(true);
+  const [loadingType, setLoadingType] = useState(1);
 
+  useEffect(() => {
+    setLoading(false);
+  }, []);
+  
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -52,26 +58,30 @@ const CriarCampanhas = () => {
     }
     
     try {
+      setLoading(true);
+      setLoadingType(2);
+
       const response = await api.post('/financial/fgts/create_instance', data);
 
       if (response.status == 200) {
+        setLoading(false);
+
         notify.success('Sucesso. Instância criada');
 
         navigate('/financial/instance-list');
       }
     } catch (error) {
+      setLoading(false);
       notify.error(`Error. ${error.response.data.message}`);
     }
   };
 
-  useEffect(() => {
-    setLoading(false);
-  }, []);
-
   return (
     <>
-      {isLoading ? (
+      {isLoading ? loadingType == 1 ? (
         <GeneralSkeleton />
+      ) : (
+        <Loader />
       ) : (
         <>
           <Container maxWidth="xxl" sx={{ display: 'flex', justifyContent: 'space-between', marginLeft: '-10px', marginBottom: '10px' }}>

@@ -7,6 +7,7 @@ import { useTheme } from '@mui/material/styles';
 import { Description } from '@mui/icons-material'; // Importar o ícone Description
 import DeleteIcon from '@mui/icons-material/Delete';
 import CustomDataGrid from 'ui-component/CustomDataGrid';
+import Loader from 'ui-component/Loader';
 import MainCard from 'ui-component/cards/MainCard';
 import GeneralSkeleton from 'ui-component/cards/Skeleton/GeneralSkeleton';
 import ConfirmDialogDelete from "./Dialogs/ConfirmDialogDelete";
@@ -24,6 +25,7 @@ const SimulationCampaigns = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [isLoading, setLoading] = useState(true);
+  const [loadingType, setLoadingType] = useState(1);
   const [openDialogDeleteCampaign, setOpenDialogDeleteCampaign] = useState(false);
   const [openDialogContinueCampaign, setOpenDialogContinueCampaign] = useState(false);
   const [dataCampaign, setDataCampaign] = useState({});
@@ -97,9 +99,13 @@ const SimulationCampaigns = () => {
   };
 
   const showData = async () => {
-    const { data } = await api.get('/financial/fgts/show_campaigns');
+    setLoading(true);
+    setLoadingType(1);
 
+    const { data } = await api.get('/financial/fgts/show_campaigns');
     setRows(data);
+
+    setLoading(false);
   }
 
   const downloadExcel = async (uuid) => {
@@ -110,6 +116,8 @@ const SimulationCampaigns = () => {
 
   const continueCampaign = async (instances) => {
     try {
+      setLoading(true);
+      setLoadingType(2);
 
       const response = await customApi.post(`${process.env.REACT_APP_API_URL_AUT}/start`, { uuid: dataCampaign.uuid, continue: true, instances });
 
@@ -119,14 +127,19 @@ const SimulationCampaigns = () => {
         setDataCampaign({});
         handleDialogContinueCampaign();
         showData();
+        setLoading(false);
       }
     } catch (error) {
+      setLoading(false);
       notify.error(`Erro. ${error.response.data.message}`);
     }
   }
 
   const deleteCampaign = async () => {
     try {
+      setLoading(true);
+      setLoadingType(2);
+
       const response = await api.delete(`/financial/fgts/delete_campaign/${dataCampaign.uuid}`);
 
       if (response.status == 200) {
@@ -136,7 +149,11 @@ const SimulationCampaigns = () => {
         handleDialogClose();
         showData();
       }
+      
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
+
       notify.error(`Erro. ${error.response.data.message}`);
     }
   }
@@ -276,8 +293,10 @@ const SimulationCampaigns = () => {
 
   return (
     <>
-      {isLoading ? (
+      {isLoading ? loadingType == 1 ? (
         <GeneralSkeleton />
+      ) : (
+        <Loader />
       ) : (
         <>
           <MainCard sx={{ mt: 2 }}>
