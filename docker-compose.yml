@@ -1,14 +1,9 @@
 version: '3.8'
 
 services:
-  web:
+  crm-frontend-consign:
     build:
       context: .
-      dockerfile: Dockerfile
+    container_name: crm-frontend-consign
     ports:
-      - "3000:3000"
-    environment:
-      NODE_ENV: production
-    volumes:
-      - .:/usr/app
-      - /usr/app/node_modules
+      - "3000:80"
