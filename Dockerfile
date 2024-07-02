@@ -6,44 +6,41 @@ FROM node:21-alpine AS development
 # Set working directory
 WORKDIR /usr/app
 
-# 
+# Copy package files
 COPY package.json /usr/app/package.json
-COPY package-lock.json /usr/app/package-lock.json
+COPY yarn.lock /usr/app/yarn.lock
 
-# Same as npm install
-RUN npm ci
+# Install dependencies with yarn
+RUN yarn install --frozen-lockfile
 
 COPY . /usr/app
 
-# ENV CI=true
+# Set environment variables
 ENV PORT=3000
 
 CMD [ "npm", "start" ]
 
+# Separate stage for building
 FROM development AS build
 
-RUN npm run build
+RUN yarn build
 
+# Additional stage for development environment setup
 FROM development as dev-envs
-RUN <<EOF
-apt-get update
-apt-get install -y --no-install-recommends git
-EOF
+RUN apk update && \
+    apk add --no-cache git
 
-RUN <<EOF
-useradd -s /bin/bash -m vscode
-groupadd docker
-usermod -aG docker vscode
-EOF
+RUN adduser -S vscode \
+    && addgroup docker \
+    && addgroup vscode docker
 
-# install Docker tools (cli, buildx, compose)
-COPY --from=gloursdocker/docker / /
-CMD [ "npm", "start" ]
+# Example of installing Docker tools if needed
+# COPY --from=gloursdocker/docker / /
 
 # 2. For Nginx setup
 FROM nginx:alpine
 
-# Copy config nginx
+# Copy nginx configuration
 COPY --from=build /usr/app/nginx.conf /etc/nginx/conf.d/default.conf
 
 WORKDIR /usr/share/nginx/html
@@ -51,8 +48,8 @@ WORKDIR /usr/share/nginx/html
 # Remove default nginx static assets
 RUN rm -rf ./*
 
-# Copy static assets from builder stage
+# Copy built static assets from the build stage
 COPY --from=build /usr/app/build .
 
-# Containers run nginx with global directives and daemon off
+# Configure nginx to run as a foreground process
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
