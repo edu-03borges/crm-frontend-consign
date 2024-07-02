@@ -1,23 +1,23 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import {
   Box,
   Button,
-  Checkbox,
+  Divider,
   FormControl,
-  FormControlLabel,
   FormHelperText,
+  Grid,
   IconButton,
   InputAdornment,
   InputLabel,
-  OutlinedInput,
-  Stack,
-  Typography
+  OutlinedInput
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import { userSignIn } from 'actions/auth';
 
 import useScriptRef from 'hooks/useScriptRef';
 import AnimateButton from 'ui-component/extended/AnimateButton';
@@ -28,7 +28,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 const FirebaseLogin = ({ ...others }) => {
   const theme = useTheme();
   const scriptedRef = useScriptRef();
-  const [checked, setChecked] = useState(true);
+  const dispatch = useDispatch();
 
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => {
@@ -39,26 +39,54 @@ const FirebaseLogin = ({ ...others }) => {
     event.preventDefault();
   };
 
+  const handleLogin = async (user, password) => {
+
+    const count = 1;
+
+    const data = {
+      count,
+      user,
+      password,
+    };
+ 
+    dispatch(userSignIn(data));
+  };
+
   return (
     <>
+      <Grid container direction="column" justifyContent="center" sx={{ mt: 2, mb: 2 }}>
+        <Grid item xs={12}>
+          <Box
+            sx={{
+              alignItems: 'center',
+              display: 'flex'
+            }}
+          >
+            <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
+
+            <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
+          </Box>
+        </Grid>
+      </Grid>
+
       <Formik
         initialValues={{
-          email: 'teste@teste.com',
-          password: '123456',
+          user: 'MODELO',
+          password: '1234',
           submit: null
         }}
         validationSchema={Yup.object().shape({
-          email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-          password: Yup.string().max(255).required('Password is required')
+          user: Yup.string().max(255).required('O usuário é obrigatório'),
+          password: Yup.string().max(255).required('A senha é obrigatória')
         })}
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
+            await handleLogin(values.user, values.password);
             if (scriptedRef.current) {
               setStatus({ success: true });
               setSubmitting(false);
             }
           } catch (err) {
-            console.error(err);
             if (scriptedRef.current) {
               setStatus({ success: false });
               setErrors({ submit: err.message });
@@ -69,21 +97,21 @@ const FirebaseLogin = ({ ...others }) => {
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit} {...others}>
-            <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-email-login">Endereço de E-mail / Usuário</InputLabel>
+            <FormControl fullWidth error={Boolean(touched.user && errors.user)} sx={{ ...theme.typography.customInput }}>
+              <InputLabel htmlFor="outlined-adornment-user-login">Usuário</InputLabel>
               <OutlinedInput
-                id="outlined-adornment-email-login"
-                type="email"
-                value={values.email}
-                name="email"
+                id="outlined-adornment-user-login"
+                type="text"
+                value={values.user}
+                name="user"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                label="Email Address / Username"
+                label="User"
                 inputProps={{}}
               />
-              {touched.email && errors.email && (
-                <FormHelperText error id="standard-weight-helper-text-email-login">
-                  {errors.email}
+              {touched.user && errors.user && (
+                <FormHelperText error id="standard-weight-helper-text-user-login">
+                  {errors.user}
                 </FormHelperText>
               )}
             </FormControl>
@@ -119,17 +147,6 @@ const FirebaseLogin = ({ ...others }) => {
                 </FormHelperText>
               )}
             </FormControl>
-            <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
-              <FormControlLabel
-                control={
-                  <Checkbox checked={checked} onChange={(event) => setChecked(event.target.checked)} name="checked" color="primary" />
-                }
-                label="Lembrar-me"
-              />
-              <Typography variant="subtitle1" color="secondary" sx={{ textDecoration: 'none', cursor: 'pointer' }}>
-                Esqueceu sua senha?
-              </Typography>
-            </Stack>
             {errors.submit && (
               <Box sx={{ mt: 3 }}>
                 <FormHelperText error>{errors.submit}</FormHelperText>
@@ -139,7 +156,7 @@ const FirebaseLogin = ({ ...others }) => {
             <Box sx={{ mt: 2 }}>
               <AnimateButton>
                 <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="secondary">
-                  Entrar
+                  Logar
                 </Button>
               </AnimateButton>
             </Box>

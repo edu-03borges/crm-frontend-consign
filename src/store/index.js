@@ -1,7 +1,6 @@
-import { createStore } from 'redux';
-import reducer from './reducer';
+import configureStore, { history } from './configureStore';
 
-const store = createStore(reducer);
-const persister = '';
+const initialState = {};
+const store = configureStore(initialState);
 
-export { store, persister };
+export { store, history };

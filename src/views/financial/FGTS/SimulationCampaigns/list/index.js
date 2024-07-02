@@ -119,7 +119,9 @@ const SimulationCampaigns = () => {
       setLoading(true);
       setLoadingType(2);
 
-      const response = await customApi.post(`${process.env.REACT_APP_API_URL_AUT}/start`, { uuid: dataCampaign.uuid, continue: true, instances });
+      const publicUrl = await getPublicUrl();
+
+      const response = await customApi.post(`${publicUrl}/start`, { uuid: dataCampaign.uuid, continue: true, instances });
 
       if (response.status == 200) {
         notify.success('Sucesso. Iniciando campanha');
@@ -128,6 +130,26 @@ const SimulationCampaigns = () => {
         handleDialogContinueCampaign();
         showData();
         setLoading(false);
+      }
+    } catch (error) {
+      setLoading(false);
+      notify.error(`Erro. ${error.response.data.message}`);
+    }
+  }
+
+  async function getPublicUrl() {
+    try {
+      setLoading(true);
+      setLoadingType(2);
+
+      const code = 1;
+
+      const response = await api.get(`/utils/get_public_url/${code}`);
+
+      if (response.status == 200) {
+        setLoading(false);
+
+        return response.data;
       }
     } catch (error) {
       setLoading(false);
