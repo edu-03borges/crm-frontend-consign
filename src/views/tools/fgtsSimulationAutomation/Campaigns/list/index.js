@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react';
+import { useSelector } from "react-redux";
 
 import { Badge, Grid, Tooltip, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
@@ -23,6 +24,7 @@ import * as XLSX from 'xlsx';
 const SimulationCampaigns = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { userInfo } = useSelector(({ auth }) => auth);
 
   const [isLoading, setLoading] = useState(true);
   const [loadingType, setLoadingType] = useState(1);
@@ -99,19 +101,37 @@ const SimulationCampaigns = () => {
   };
 
   const showData = async () => {
-    setLoading(true);
-    setLoadingType(1);
+    try {
+      setLoading(true);
+      setLoadingType(1);
+  
+      const response = await api.get('/tools/fgts_simulation_automation/show_campaigns');
 
-    const { data } = await api.get('/financial/fgts/show_campaigns');
-    setRows(data);
-
-    setLoading(false);
+      if (response && response.status === 200 && response.data) {
+        setRows(response.data);
+        setLoading(false);
+      }
+    } catch (error) {
+      setLoading(false);
+      notify.error(`Error. ${error.response.data.message}`);
+    }
   }
 
   const downloadExcel = async (uuid) => {
-    const { data } = await api.get(`/financial/fgts/search_data/${uuid}`);
+    try {
+      setLoading(true);
+      setLoadingType(2);
 
-    generateXLSX(data.query_data, data.name);
+      const response = await api.get(`/tools/fgts_simulation_automation/search_data/${uuid}`);
+
+      if (response && response.status === 200 && response.data) {
+        generateXLSX(response.data.query_data, response.data.name);
+        setLoading(false);
+      }
+    } catch (error) {
+      setLoading(false);
+      notify.error(`Error. ${error.response.data.message}`);
+    }
   }
 
   const continueCampaign = async (instances) => {
@@ -119,9 +139,11 @@ const SimulationCampaigns = () => {
       setLoading(true);
       setLoadingType(2);
 
+      const data = { idUser: userInfo.id, uuid: dataCampaign.uuid, continue: true, instances };
+
       const publicUrl = await getPublicUrl();
 
-      const response = await customApi.post(`${publicUrl}/start`, { uuid: dataCampaign.uuid, continue: true, instances });
+      const response = await customApi.post(`${publicUrl}/start`, data);
 
       if (response.status == 200) {
         notify.success('Sucesso. Iniciando campanha');
@@ -139,20 +161,12 @@ const SimulationCampaigns = () => {
 
   async function getPublicUrl() {
     try {
-      setLoading(true);
-      setLoadingType(2);
+      const response = await api.get(`/utils/get_public_url`);
 
-      const code = 1;
-
-      const response = await api.get(`/utils/get_public_url/${code}`);
-
-      if (response.status == 200) {
-        setLoading(false);
-
+      if (response && response.status === 200 && response.data) {
         return response.data;
       }
     } catch (error) {
-      setLoading(false);
       notify.error(`Erro. ${error.response.data.message}`);
     }
   }
@@ -162,20 +176,18 @@ const SimulationCampaigns = () => {
       setLoading(true);
       setLoadingType(2);
 
-      const response = await api.delete(`/financial/fgts/delete_campaign/${dataCampaign.uuid}`);
+      const response = await api.delete(`/tools/fgts_simulation_automation/delete_campaign/${dataCampaign.uuid}`);
 
       if (response.status == 200) {
-        notify.success('Sucesso. Campanha deletada');
-
+        setLoading(false);
         setDataCampaign({});
         handleDialogClose();
         showData();
+
+        notify.success('Sucesso. Campanha deletada');
       }
-      
-      setLoading(false);
     } catch (error) {
       setLoading(false);
-
       notify.error(`Erro. ${error.response.data.message}`);
     }
   }

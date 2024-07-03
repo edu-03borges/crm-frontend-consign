@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import {
+  useNavigate,
+} from 'react-router-dom';
 
 import {
   Box,
@@ -17,7 +20,7 @@ import { useTheme } from '@mui/material/styles';
 
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { userSignIn } from 'actions/auth';
+import { userSignInSuccess } from 'actions/auth';
 
 import useScriptRef from 'hooks/useScriptRef';
 import AnimateButton from 'ui-component/extended/AnimateButton';
@@ -25,10 +28,15 @@ import AnimateButton from 'ui-component/extended/AnimateButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
+import notify from "utils/notify";
+
+import { apiAuth } from "utils/api";
+
 const FirebaseLogin = ({ ...others }) => {
   const theme = useTheme();
   const scriptedRef = useScriptRef();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => {
@@ -40,16 +48,33 @@ const FirebaseLogin = ({ ...others }) => {
   };
 
   const handleLogin = async (user, password) => {
-
-    const count = 1;
-
-    const data = {
-      count,
-      user,
-      password,
-    };
+    try {
+      const response = await apiAuth
+      .post('/authenticate_user', {
+        user,
+        password,
+    });
  
-    dispatch(userSignIn(data));
+    if (response.status === 200) {
+      localStorage.setItem('tokenconsign', response.data.token.token);
+
+      dispatch(userSignInSuccess({
+        id: response.data.id,
+        uuid: response.data.uuid,
+        username: response.data.username,
+        company: response.data.company,
+        token: response.data.token.token,
+      }));
+
+      // const route = '/';
+
+      // navigate(route);
+
+      window.location.reload();
+    }
+    } catch (error) {
+      notify.error(`Erro. ${error.response.data.message}`);
+    }
   };
 
   return (

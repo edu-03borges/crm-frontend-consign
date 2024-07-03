@@ -7,8 +7,7 @@ import AuthFooter from 'ui-component/cards/AuthFooter';
 import AuthCardWrapper from '../AuthCardWrapper';
 import AuthWrapper1 from '../AuthWrapper1';
 import AuthLogin from '../auth-forms/AuthLogin';
-
-import logo from 'assets/images/logo.png';
+import Logo from 'ui-component/Logo';
 
 const Login = () => {
   const theme = useTheme();
@@ -31,16 +30,13 @@ const Login = () => {
                     }}
                   >
                     <Link to="#">
-                      <img src={logo} alt="Logo" width="160" />
+                      <Logo />
                     </Link>
                   </Box>
                   <Grid item xs={12} sx={{ mt: 2 }}>
                     <Grid container direction={matchDownSM ? 'column-reverse' : 'row'} alignItems="center" justifyContent="center">
                       <Grid item>
                         <Stack alignItems="center" justifyContent="center" spacing={3}>
-                          <Typography color={theme.palette.secondary.main} gutterBottom variant={matchDownSM ? 'h3' : 'h2'}>
-                            Olá, {'{Nome Empresa}'}!
-                          </Typography>
                           <Typography variant="caption" fontSize="16px" textAlign={matchDownSM ? 'center' : 'inherit'}>
                             Sistema Gerencial de Leads
                           </Typography>

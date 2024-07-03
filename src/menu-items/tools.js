@@ -1,26 +1,54 @@
-import { AutoGraph } from '@mui/icons-material';
+import { Android } from '@mui/icons-material';
 
-const icons = { AutoGraph };
+const icons = { Android };
 
 const tools = {
   id: 'tools',
   title: 'Ferramentas',
-  // caption: '',
+  caption: 'Portal de Ferramentas',
   type: 'group',
   children: [
     {
-      id: 'dataCollect',
-      title: 'Higienização',
+      id: 'fgts-simulation-automation',
+      title: 'Automação FGTS',
       type: 'collapse',
-      icon: icons.AutoGraph,
+      icon: icons.Android,
       children: [
         {
-          id: 'cpf-data-collect',
-          title: 'por CPF',
+          id: 'campaign-dashboard',
+          title: 'Dashboard',
           type: 'item',
-          url: '/tools/cpf-data-collect',
+          url: '/tools/fgts-simulation-automation/campaign-dashboard',
           breadcrumbs: false
-        }
+        },
+        {
+          id: 'campaign-create',
+          title: 'Nova Campanha',
+          type: 'item',
+          url: '/tools/fgts-simulation-automation/campaign-create',
+          breadcrumbs: false
+        },
+        {
+          id: 'campaigns-list',
+          title: 'Ver Campanhas',
+          type: 'item',
+          url: '/tools/fgts-simulation-automation/campaigns-list',
+          breadcrumbs: false
+        },
+        {
+          id: 'instance-create',
+          title: 'Criar Instância',
+          type: 'item',
+          url: '/tools/fgts-simulation-automation/instance-create',
+          breadcrumbs: false
+        },
+        {
+          id: 'instance-list',
+          title: 'Ver Instâncias',
+          type: 'item',
+          url: '/tools/fgts-simulation-automation/instance-list',
+          breadcrumbs: false
+        },
       ]
     }
   ]

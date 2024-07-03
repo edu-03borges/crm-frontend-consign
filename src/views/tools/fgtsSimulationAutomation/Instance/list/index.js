@@ -29,60 +29,40 @@ const Dashboard = () => {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    setLoading(false);
-
     showData()
   }, []);
 
   const showData = async () => {
-    setLoading(true);
-    setLoadingType(1);
-
-    const { data } = await api.get('/financial/fgts/show_instances');
-
-    setRows(data);
-
-    setLoading(false);
-  } 
-
-  const timeToWords = (milliseconds) => {
-    let totalSeconds = Math.floor(milliseconds / 1000);
-    let totalMinutes = Math.floor(totalSeconds / 60);
-    let totalHours = Math.floor(totalMinutes / 60);
-    let days = Math.floor(totalHours / 24);
+    try {
+      setLoading(true);
+      setLoadingType(1);
   
-    let hours = totalHours % 24;
-    let minutes = totalMinutes % 60;
+      const response = await api.get('/tools/fgts_simulation_automation/show_instances');
   
-    let parts = [];
-
-    if (days > 0) {
-      parts.push(`${days} ${days === 1 ? 'Dia' : 'Dias'}`);
+      if (response && response.status === 200 && response.data) {
+        setRows(response.data);
+        setLoading(false);
+      }
+    } catch (error) {
+      setLoading(false);
+      notify.error(`Error: ${error.response.data.message}`);
     }
-    if (hours > 0) {
-      parts.push(`${hours} ${hours === 1 ? 'hora' : 'horas'}`);
-    }
-    if (minutes > 0 || parts.length === 0) {
-      parts.push(`${minutes} ${minutes === 1 ? 'minuto' : 'minutos'}`);
-    }
-  
-    return parts.join(' e ');
-  }
+  };
 
   const deleteInstance = async () => {
     try {
       setLoading(true);
       setLoadingType(2);
 
-      const response = await api.delete(`/financial/fgts/delete_instance/${dataInstance.uuid}`);
+      const response = await api.delete(`/tools/fgts_simulation_automation/delete_instance/${dataInstance.uuid}`);
 
       if (response.status == 200) {
-        notify.success('Sucesso. Instância deletada');
-  
+        setLoading(false);
         setDataInstance({});
         handleDialogCloseDelete();
         showData();
-        setLoading(false);
+
+        notify.success('Sucesso. Instância deletada');
       }
     } catch (error) {
       setLoading(false);
@@ -103,15 +83,15 @@ const Dashboard = () => {
       setLoading(true);
       setLoadingType(2);
       
-      const response = await api.post(`/financial/fgts/update_status_instance/${dataInstance.uuid}`, { status });
+      const response = await api.post(`/tools/fgts_simulation_automation/update_status_instance/${dataInstance.uuid}`, { status });
 
-      if (response.status == 200) {
-        notify.success('Sucesso. Status da instância atualizado');
-  
+      if (response.status == 200) {  
+        setLoading(false);
         setDataInstance({});
         handleDialogCloseUpdateStatus();
         showData();
-        setLoading(false);
+      
+        notify.success('Sucesso. Status da instância atualizado');
       }
     } catch (error) {
       setLoading(false);

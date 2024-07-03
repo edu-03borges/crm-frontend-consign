@@ -1,29 +1,19 @@
 import {
   SIGNIN_USER_SUCCESS,
   SIGNOUT_USER_SUCCESS,
-  SIGNIN_USER,
-  SIGNOUT_USER,
-} from 'store/actions';
+} from '../store/actions';
 
-export const userSignInSuccess = (user) => {
+export const userSignInSuccess = (userInfo) => {
   return {
     type: SIGNIN_USER_SUCCESS,
-    payload: user,
+    indo: "stores user data",
+    payload: userInfo,
   };
 };
+
 export const userSignOutSuccess = () => {
   return {
     type: SIGNOUT_USER_SUCCESS,
-  };
-};
-export const userSignIn = (user) => {
-  return {
-    type: SIGNIN_USER,
-    payload: user,
-  };
-};
-export const userSignOut = () => {
-  return {
-    type: SIGNOUT_USER,
+    info: "removes user data",
   };
 };

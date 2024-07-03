@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -17,6 +17,7 @@ import {
   Typography
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { userSignOutSuccess } from 'actions/auth';
 
 import MainCard from 'ui-component/cards/MainCard';
 import Transitions from 'ui-component/extended/Transitions';
@@ -29,13 +30,20 @@ const ProfileSection = () => {
   const theme = useTheme();
   const customization = useSelector((state) => state.customization);
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
+  
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [open, setOpen] = useState(false);
 
   const anchorRef = useRef(null);
   const handleLogout = async () => {
-    
+    localStorage.removeItem('tokenconsign');
+
+    dispatch(userSignOutSuccess());
+
+    const route = '/login';
+
+    navigate(route);
   };
 
   const handleClose = (event) => {

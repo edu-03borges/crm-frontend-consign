@@ -1,9 +1,8 @@
 // import dashboard from './dashboard';
-import financial from './financial';
-// import tools from './tools';
+import tools from './tools';
 
 const menuItems = {
-  items: [/* dashboard */, financial, /* tools */]
+  items: [/* dashboard */, tools ]
 };
 
 export default menuItems;

@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-
-import { Button, Container, Grid, IconButton, TextField, Typography, useMediaQuery } from '@mui/material';
+import { Button, Container, Grid, TextField, Typography, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 import { heightButton } from 'store/constant';
@@ -27,10 +25,6 @@ const CriarCampanhas = () => {
   useEffect(() => {
     setLoading(false);
   }, []);
-  
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,14 +55,14 @@ const CriarCampanhas = () => {
       setLoading(true);
       setLoadingType(2);
 
-      const response = await api.post('/financial/fgts/create_instance', data);
+      const response = await api.post('/tools/fgts_simulation_automation/create_instance', data);
 
       if (response.status == 200) {
+        navigate('/tools/fgts-simulation-automation/instance-list');
+
         setLoading(false);
 
         notify.success('Sucesso. Instância criada');
-
-        navigate('/financial/instance-list');
       }
     } catch (error) {
       setLoading(false);
@@ -88,10 +82,6 @@ const CriarCampanhas = () => {
             <Typography variant="h2" color="secondary">
               Criar Instância
             </Typography>
-
-            <IconButton aria-label="menu de opções" onClick={handleMenuOpen}>
-              <MoreVertIcon />
-            </IconButton>
           </Container>
           <MainCard>
             <Grid container>

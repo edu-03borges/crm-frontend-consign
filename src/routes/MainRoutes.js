@@ -1,22 +1,22 @@
 import { lazy } from 'react';
 
-import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
+import ProtectedRoute from './ProtectedRoute';
 
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')));
 
 // FGTS
-const DashboardCampaigns = Loadable(lazy(() => import('views/financial/FGTS/SimulationCampaigns/dashboard')));
-const ListCampaigns = Loadable(lazy(() => import('views/financial/FGTS/SimulationCampaigns/list')));
-const CreateCampaigns = Loadable(lazy(() => import('views/financial/FGTS/SimulationCampaigns/create')));
-const ListInstance = Loadable(lazy(() => import('views/financial/FGTS/Instance/list')));
-const CreateInstance = Loadable(lazy(() => import('views/financial/FGTS/Instance/create')));
+const DashboardCampaigns = Loadable(lazy(() => import('views/tools/fgtsSimulationAutomation/Campaigns/dashboard')));
+const ListCampaigns = Loadable(lazy(() => import('views/tools/fgtsSimulationAutomation/Campaigns/list')));
+const CreateCampaigns = Loadable(lazy(() => import('views/tools/fgtsSimulationAutomation/Campaigns/create')));
+const ListInstance = Loadable(lazy(() => import('views/tools/fgtsSimulationAutomation/Instance/list')));
+const CreateInstance = Loadable(lazy(() => import('views/tools/fgtsSimulationAutomation/Instance/create')));
 
-const CpfDataCollect = Loadable(lazy(() => import('views/tools/DataCollect')));
+const CpfDataCollect = Loadable(lazy(() => import('views/integrations/DataCollect')));
 
 const MainRoutes = {
   path: '/',
-  element: <MainLayout />,
+  element: <ProtectedRoute />,
   children: [
     // Dashboard
 
@@ -37,26 +37,26 @@ const MainRoutes = {
     // Financial - FGTS:
 
     {
-      path: 'financial',
+      path: 'tools',
       children: [
         {
-          path: 'campaign-dashboard',
+          path: 'fgts-simulation-automation/campaign-dashboard',
           element: <DashboardCampaigns />
         },
         {
-          path: 'campaigns-list',
+          path: 'fgts-simulation-automation/campaigns-list',
           element: <ListCampaigns />
         },
         {
-          path: 'campaign-create',
+          path: 'fgts-simulation-automation/campaign-create',
           element: <CreateCampaigns />
         },
         {
-          path: 'instance-list',
+          path: 'fgts-simulation-automation/instance-list',
           element: <ListInstance />
         },
         {
-          path: 'instance-create',
+          path: 'fgts-simulation-automation/instance-create',
           element: <CreateInstance />
         }
       ]
@@ -65,7 +65,7 @@ const MainRoutes = {
     // Tools - DataCollect:
 
     {
-      path: 'tools',
+      path: 'integrations',
       children: [
         {
           path: 'cpf-data-collect',

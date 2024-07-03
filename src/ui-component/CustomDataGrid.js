@@ -1,7 +1,6 @@
 import { Grid, useMediaQuery } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { DataGridPro } from '@mui/x-data-grid-pro';
-import { LicenseInfo } from '@mui/x-license';
 import { useEffect, useRef, useState } from 'react';
 
 const StyledDataGridPro = styled(DataGridPro)({
@@ -30,8 +29,6 @@ const StyledDataGridPro = styled(DataGridPro)({
 });
 
 const CustomDataGrid = ({ rows, columns }) => {
-  LicenseInfo.setLicenseKey('3a606f3b91b5cf1775c14b184cacd867Tz03NTMyNCxFPTE3MjcxMDQzOTEwMDAsUz1wcm8sTE09c3Vic2NyaXB0aW9uLEtWPTI=');
-
   const [adjustedColumns, setAdjustedColumns] = useState(columns);
   const headerRef = useRef(null);
   const theme = useTheme();

@@ -92,7 +92,7 @@ const MainLayout = () => {
         <Outlet />
       </Main>
       {/* Engrenagem */}
-      {/* <Customization /> */}
+      <Customization />
     </Box>
   );
 };

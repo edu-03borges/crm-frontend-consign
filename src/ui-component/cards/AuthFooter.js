@@ -1,22 +1,19 @@
-// material-ui
 import { Link, Stack, Typography } from '@mui/material';
-
-// ==============================|| FOOTER - AUTHENTICATION 2 & 3 ||============================== //
 
 const AuthFooter = () => (
   <Stack direction="row" justifyContent="space-between">
     <Typography
       variant="subtitle2"
       component={Link}
-      href="https://www.instagram.com/novorumoemprestimos/"
+      href="https://www.instagram.com/edu_03borges/"
       target="_blank"
       underline="hover"
     >
-      instagram.com/novorumoemprestimos
+      instagram.com/edu_03borges
     </Typography>
-    <Typography variant="subtitle2" component={Link} href="https://novorumoemprestimos.com.br/" target="_blank" underline="hover">
-      &copy; novorumoemprestimos.com.br
-    </Typography>
+    {/* <Typography variant="subtitle2" component={Link} href="https://www.example.com" target="_blank" underline="hover">
+      &copy; www.example.com
+    </Typography> */}
   </Stack>
 );
 

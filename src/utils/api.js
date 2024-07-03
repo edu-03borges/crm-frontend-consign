@@ -19,7 +19,7 @@ const api = axios.create({
   baseURL: urlBack,
   headers: {
     'x-forwarded-for': myIp,
-    'x-access-token': token,
+    'Authorization': `Bearer ${token}`,
   }
 });
 

@@ -3,6 +3,7 @@ import { useState, useEffect  } from 'react';
 import { Box, Button, Chip,  FormControl, InputLabel, MenuItem, Select, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 import api from 'utils/api';
+import notify from 'utils/notify';
 
 const ConfirmDialogUpdateStatus = ({ open, handleClose, handleConfirm }) => {
 
@@ -17,9 +18,15 @@ const ConfirmDialogUpdateStatus = ({ open, handleClose, handleConfirm }) => {
   }, [open]);
 
   const showDataInstances = async () => {
-    const { data } = await api.get('/financial/fgts/show_status_instances');
-
-    setInstances(data);
+    try {
+      const response = await api.get('/tools/fgts_simulation_automation/show_status_instances');
+      
+      if (response && response.status === 200 && response.data) {
+        setInstances(response.data);
+      }
+    } catch (error) {
+      notify.error(`Error. ${error.response.data.message}`);
+    }
   }
 
   return (
