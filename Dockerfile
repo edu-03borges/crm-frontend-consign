@@ -11,7 +11,7 @@ COPY package.json /usr/app/package.json
 COPY package-lock.json /usr/app/package-lock.json
 
 # Same as npm install
-RUN npm ci
+RUN npm install
 
 COPY . /usr/app
 
