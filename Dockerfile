@@ -9,6 +9,9 @@ WORKDIR /usr/app
 # 
 COPY package.json /usr/app/package.json
 
+# Set NODE_OPTIONS for increased memory limit
+ENV NODE_OPTIONS="--max-old-space-size=2048"
+
 # Same as npm install
 RUN npm install
 
