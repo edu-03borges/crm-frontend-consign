@@ -66,7 +66,10 @@ const CriarCampanhas = () => {
       }
     } catch (error) {
       setLoading(false);
-      notify.error(`Error. ${error.response.data.message}`);
+      if (error.response && error.response.data && error.response.data.message)
+        notify.error(`Erro. ${error.response.data.message}`);
+      else
+        notify.error(`Erro. Não foi possível criar a instância!`);
     }
   };
 

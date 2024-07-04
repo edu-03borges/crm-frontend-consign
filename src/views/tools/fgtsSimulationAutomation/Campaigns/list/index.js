@@ -113,7 +113,10 @@ const SimulationCampaigns = () => {
       }
     } catch (error) {
       setLoading(false);
-      notify.error(`Error. ${error.response.data.message}`);
+      if (error.response && error.response.data && error.response.data.message)
+        notify.error(`Erro. ${error.response.data.message}`);
+      else
+        notify.error(`Erro. Não foi possível listar as campanhas!`);
     }
   }
 
@@ -130,7 +133,10 @@ const SimulationCampaigns = () => {
       }
     } catch (error) {
       setLoading(false);
-      notify.error(`Error. ${error.response.data.message}`);
+      if (error.response && error.response.data && error.response.data.message)
+        notify.error(`Erro. ${error.response.data.message}`);
+      else
+        notify.error(`Erro. Não foi possível gerar a planilha!`);
     }
   }
 
@@ -167,7 +173,10 @@ const SimulationCampaigns = () => {
         return response.data;
       }
     } catch (error) {
-      notify.error(`Erro. ${error.response.data.message}`);
+      if (error.response && error.response.data && error.response.data.message)
+        notify.error(`Erro. ${error.response.data.message}`);
+      else
+        notify.error(`Erro. Não foi possível pegar a url pública!`);
     }
   }
 
@@ -188,7 +197,10 @@ const SimulationCampaigns = () => {
       }
     } catch (error) {
       setLoading(false);
-      notify.error(`Erro. ${error.response.data.message}`);
+      if (error.response && error.response.data && error.response.data.message)
+        notify.error(`Erro. ${error.response.data.message}`);
+      else
+        notify.error(`Erro. Não foi possível deletar a campanha!`);
     }
   }
 

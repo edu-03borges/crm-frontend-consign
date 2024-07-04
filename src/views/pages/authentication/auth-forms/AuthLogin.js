@@ -73,7 +73,7 @@ const FirebaseLogin = ({ ...others }) => {
       window.location.reload();
     }
     } catch (error) {
-      if (error.response && error.response.data)
+      if (error.response && error.response.data && error.response.data.message)
         notify.error(`Erro. ${error.response.data.message}`);
       else
         notify.error(`Erro. Login incorreto!`);
@@ -99,8 +99,6 @@ const FirebaseLogin = ({ ...others }) => {
 
       <Formik
         initialValues={{
-          user: 'MODELO',
-          password: '1234',
           submit: null
         }}
         validationSchema={Yup.object().shape({

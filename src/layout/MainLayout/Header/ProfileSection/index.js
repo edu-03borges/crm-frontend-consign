@@ -29,6 +29,7 @@ import { format, subHours } from 'date-fns';
 const ProfileSection = () => {
   const theme = useTheme();
   const customization = useSelector((state) => state.customization);
+  const { userInfo } = useSelector(({ auth }) => auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   
@@ -151,7 +152,7 @@ const ProfileSection = () => {
                       <Stack direction="row" spacing={0.5} alignItems="center">
                         <Typography variant="h4">{message()}</Typography>
                         <Typography component="span" variant="h4" sx={{ fontWeight: 400 }}>
-                          Cubo Sistemas
+                          {userInfo.company}
                         </Typography>
                       </Stack>
                       <Typography variant="subtitle2">Consign</Typography>
