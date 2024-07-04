@@ -73,7 +73,10 @@ const FirebaseLogin = ({ ...others }) => {
       window.location.reload();
     }
     } catch (error) {
-      notify.error(`Erro. ${error.response.data.message}`);
+      if (error.response && error.response.data)
+        notify.error(`Erro. ${error.response.data.message}`);
+      else
+        notify.error(`Erro. Login incorreto!`);
     }
   };
 
