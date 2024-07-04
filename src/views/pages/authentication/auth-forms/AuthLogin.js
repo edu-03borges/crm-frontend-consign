@@ -55,7 +55,7 @@ const FirebaseLogin = ({ ...others }) => {
         password,
     });
  
-    if (response.status === 200) {
+    if (response && response.status === 200 && response.data) {
       localStorage.setItem('tokenconsign', response.data.token.token);
 
       dispatch(userSignInSuccess({

@@ -7,3 +7,9 @@ services:
     container_name: crm-frontend-consign
     ports:
       - "3000:80"
+    networks:
+      - aws
+
+networks:
+  aws:
+    external: true
