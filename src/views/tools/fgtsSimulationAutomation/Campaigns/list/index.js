@@ -161,7 +161,10 @@ const SimulationCampaigns = () => {
       }
     } catch (error) {
       setLoading(false);
-      notify.error(`Erro. ${error.response.data.message}`);
+      if (error.response && error.response.data && error.response.data.message)
+        notify.error(`Erro. ${error.response.data.message}`);
+      else
+        notify.error(`Erro. Não foi possível continuar a campanha!`);
     }
   }
 
@@ -320,12 +323,13 @@ const SimulationCampaigns = () => {
           <Badge
             color="success"
             style={{
-              color: '#8585E2',
+              color: row.status != "PROCESSANDO" ? '#8585E2' : '#B0B0B0',
               cursor: 'pointer',
             }}
             onClick={() => {
-              setOpenDialogContinueCampaign(true);
-              setDataCampaign(row);
+              if (row.status != "PROCESSANDO")
+                setOpenDialogContinueCampaign(true);
+                setDataCampaign(row);
             }}
           >
             <Tooltip title="Continuar consultas">
