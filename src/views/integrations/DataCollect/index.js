@@ -8,14 +8,13 @@ import MainCard from 'ui-component/cards/MainCard';
 import GeneralSkeleton from 'ui-component/cards/Skeleton/GeneralSkeleton';
 import * as XLSX from 'xlsx';
 
-// Data Testing Temporary **************************************************************************
 const columns = [
-  { field: 'processo', align: 'left', headerName: 'PROCESSO', width: 230 },
-  { field: 'nome', align: 'left', headerName: 'NOME', width: 250 },
-  { field: 'cpfCnpj', align: 'left', headerName: 'CPF / CNPJ', width: 250 },
-  { field: 'saldoTotal', align: 'left', headerName: 'SALDO TOTAL', width: 320 },
-  { field: 'saldoRetorno', align: 'left', headerName: 'SALDO RETORNO', width: 320 },
-  { field: 'data', align: 'left', headerName: 'DATA', width: 250 }
+  { field: 'processo', headerName: 'PROCESSO', align: 'left', flex: 1 },
+  { field: 'nome', headerName: 'NOME', align: 'left', flex: 1 },
+  { field: 'cpfCnpj', headerName: 'CPF / CNPJ', align: 'left', flex: 1 },
+  { field: 'saldoTotal', headerName: 'SALDO TOTAL', align: 'left', flex: 1 },
+  { field: 'saldoRetorno', headerName: 'SALDO RETORNO', align: 'left', flex: 1 },
+  { field: 'data', headerName: 'DATA', align: 'left', flex: 1 }
 ];
 
 const rows = [
@@ -40,7 +39,6 @@ const banks = [
     name: 'C6 Bank'
   }
 ];
-// *************************************************************************************************
 
 const handleFileUpload = (e) => {
   const file = e.target.files[0];
@@ -133,15 +131,7 @@ const DataHygiene = () => {
                     <CustomDataGrid
                       rows={rows}
                       columns={columns}
-                      initialState={{
-                        pagination: {
-                          paginationModel: {
-                            pageSize: 5
-                          }
-                        }
-                      }}
-                      pageSizeOptions={[5]}
-                      disableRowSelectionOnClick
+                      paginationMode='client'
                     />
                   </Box>
                 </Grid>

@@ -53,39 +53,39 @@ const Dashboard = () => {
   const columns = [
     {
       field: 'column1',
-      align: 'left',
       headerName: 'Coluna 1',
-      width: 20
+      align: 'left',
+      flex: 1
     },
     {
       field: 'column2',
-      align: 'left',
       headerName: 'Coluna 2',
-      width: 20
+      align: 'left',
+      flex: 1
     },
     {
       field: 'column3',
-      align: 'left',
       headerName: 'Coluna 3',
-      width: 20
+      align: 'left',
+      flex: 1
     },
     {
       field: 'column4',
-      align: 'left',
       headerName: 'Coluna 4',
-      width: 20
+      align: 'left',
+      flex: 1
     },
     {
       field: 'column5',
-      align: 'left',
       headerName: 'Coluna 5',
-      width: 20
+      align: 'left',
+      flex: 1
     },
     {
       field: 'column6',
-      align: 'left',
       headerName: 'Coluna 6',
-      width: 20
+      align: 'left',
+      flex: 1
     },
   ]
 
@@ -123,15 +123,7 @@ const Dashboard = () => {
                     <CustomDataGrid
                       rows={rows}
                       columns={columns}
-                      initialState={{
-                        pagination: {
-                          paginationModel: {
-                            pageSize: 5
-                          }
-                        }
-                      }}
-                      pageSizeOptions={[5]}
-                      disableRowSelectionOnClick
+                      paginationMode='client'
                     />
                   </Grid>
                 </Grid>

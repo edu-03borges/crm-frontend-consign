@@ -94,9 +94,9 @@ const CriarCampanhas = () => {
       setLoading(true);
       setLoadingType(2);
 
-      const publicUrl = await getPublicUrl();
+      // const publicUrl = await getPublicUrl();
 
-      const response = await customApi.post(`${publicUrl}/start`, data);
+      const response = await customApi.post(`http://localhost:5000/start`, data);
 
       if (response.status == 200) {
         navigate('/tools/fgts-simulation-automation/campaigns-list');

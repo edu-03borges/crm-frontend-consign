@@ -147,9 +147,9 @@ const SimulationCampaigns = () => {
 
       const data = { idUser: userInfo.id, uuid: dataCampaign.uuid, continue: true, instances };
 
-      const publicUrl = await getPublicUrl();
+      // const publicUrl = await getPublicUrl();
 
-      const response = await customApi.post(`${publicUrl}/start`, data);
+      const response = await customApi.post(`http://localhost:5000/start`, data);
 
       if (response.status == 200) {
         notify.success('Sucesso. Iniciando campanha');
@@ -243,17 +243,17 @@ const SimulationCampaigns = () => {
   const columns = [
     {
       field: 'name',
-      align: 'left',
       headerName: 'Nome',
-      maxWidth: 150
+      align: 'left',
+      flex: 1,
     },
-    { field: 'company', align: 'left', headerName: 'Empresa', maxWidth: 200 },
-    { field: 'records', align: 'center', headerName: 'Total de Registros', maxWidth: 150 },
+    { field: 'company', headerName: 'Empresa', align: 'left', flex: 1 },
+    { field: 'records', headerName: 'Total de Registros', align: 'center', flex: 1 },
     {
       field: 'status',
-      align: 'left',
       headerName: 'Status',
-      maxWidth: 150,
+      align: 'left',
+      flex: 1,
       renderCell: ({ row }) => (
         <Badge
           color="success"
@@ -277,17 +277,16 @@ const SimulationCampaigns = () => {
     },
     {
       field: 'created_at',
-      align: 'left',
       headerName: 'Data De Criação',
-      maxWidth: 150,
+      align: 'left',
+      flex: 1,
       renderCell: ({ row }) => formatDateToBrazilian(row.created_at)
     },
-    { field: 'records_consulted', align: 'center', headerName: 'Registros Consultados', maxWidth: 170 },
+    { field: 'records_consulted', headerName: 'Registros Consultados', align: 'center', flex: 1 },
     {
       field: 'actions',
-      align: 'left',
       headerName: 'Ações',
-      maxWidth: 100,
+      align: 'center',
       renderCell: ({ row }) => (
         <>
           <Badge
@@ -323,13 +322,12 @@ const SimulationCampaigns = () => {
           <Badge
             color="success"
             style={{
-              color: row.status != "PROCESSANDO" ? '#8585E2' : '#B0B0B0',
+              color: '#8585E2',
               cursor: 'pointer',
             }}
             onClick={() => {
-              if (row.status != "PROCESSANDO")
-                setOpenDialogContinueCampaign(true);
-                setDataCampaign(row);
+              setOpenDialogContinueCampaign(true);
+              setDataCampaign(row);
             }}
           >
             <Tooltip title="Continuar consultas">
@@ -357,15 +355,7 @@ const SimulationCampaigns = () => {
                     <CustomDataGrid
                       rows={rows}
                       columns={columns}
-                      initialState={{
-                        pagination: {
-                          paginationModel: {
-                            pageSize: 5
-                          }
-                        }
-                      }}
-                      pageSizeOptions={[5]}
-                      disableRowSelectionOnClick
+                      paginationMode='client'
                     />
                   </Grid>
                 </Grid>

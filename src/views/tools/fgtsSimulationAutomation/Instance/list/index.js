@@ -111,17 +111,17 @@ const Dashboard = () => {
   const columns = [
     {
       field: 'instance',
-      align: 'left',
       headerName: 'Instância',
-      maxWidth: 200
+      align: 'left',
+      flex: 1,
     },
-    { field: 'uuid', align: 'left', headerName: 'UUID', maxWidth: 400 },
-    { field: 'user', align: 'left', headerName: 'Usuário', maxWidth: 250 },
+    { field: 'uuid', headerName: 'UUID', align: 'left', flex: 1, },
+    { field: 'user', headerName: 'Usuário', align: 'left', flex: 1, },
     {
       field: 'status',
-      align: 'left',
       headerName: 'Status',
-      maxWidth: 150,
+      align: 'left',
+      flex: 1,
       renderCell: ({ row }) => (
         <Badge
           color="success"
@@ -146,9 +146,8 @@ const Dashboard = () => {
     },
     {
       field: 'actions',
-      align: 'left',
       headerName: 'Ações',
-      maxWidth: 100,
+      align: 'center',
       renderCell: ({ row }) => (
         <>
           <Badge
@@ -182,7 +181,6 @@ const Dashboard = () => {
           </Tooltip>
         </Badge>
         </>
-
       )
     },
   ];
@@ -203,15 +201,7 @@ const Dashboard = () => {
                     <CustomDataGrid
                       rows={rows}
                       columns={columns}
-                      initialState={{
-                        pagination: {
-                          paginationModel: {
-                            pageSize: 5
-                          }
-                        }
-                      }}
-                      pageSizeOptions={[5]}
-                      disableRowSelectionOnClick
+                      paginationMode='client'
                     />
                   </Grid>
                 </Grid>
